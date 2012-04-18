@@ -8,7 +8,13 @@ The library version matches closely the API version it handles: Browshot 1.0.0 i
 
 Browshot can handle most the API updates within the same major version, e.g. browshot 1.0.0 should be compatible with the API 1.1 or 1.2.
 
-Browshot gem is availabe at rubygems: https://rubygems.org/gems/browshot
+
+
+== Requirements
+
+    PHP 5.1.6 or abaove
+    PhpUnit 3.3.5 or above (to run unit tests)
+
 
 == Use Browshot
 
