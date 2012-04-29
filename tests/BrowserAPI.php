@@ -13,13 +13,13 @@ require_once 'TestCase.php';
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.7.0
- * @link      http://browshot.com/api/documentation#simple
+ * @version   1.8.0
+ * @link      http://browshot.com/api/documentation#browser_list
  */
 class BrowserAPI extends TestCase
 {
 
-	public function testAccountInfo()
+	public function testBrowserList()
 	{
 		$browsers = $this->browshot->browser_list();
 

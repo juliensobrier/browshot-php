@@ -13,8 +13,8 @@ require_once 'TestCase.php';
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.7.0
- * @link      http://browshot.com/api/documentation#simple
+ * @version   1.8.0
+ * @link      http://browshot.com/api/documentation#screenshot_thumbnail
  */
 class ThumbnailAPI extends TestCase
 {
@@ -37,9 +37,9 @@ class ThumbnailAPI extends TestCase
 		$screenshot = $screenshots->{$screenshot_id};
 
 
-		$thumbnail = $this->browshot->screenshot_thumbnail(array('url' => $screenshot->{'screenshot_url'}, 'width' => 320));
-// 		$this->assertFalse($thumbnail == '', "Thumbnail succeeded");
-
+		$thumbnail = $this->browshot->screenshot_thumbnail($screenshot->{'id'}, array('width' => 320));
+		$this->assertFalse($thumbnail == '', "Thumbnail succeeded");
+		$this->assertEquals(substr($thumbnail, 1, 3), 'PNG', "Thumbnail is a valid PNG file");
 	}
 }
 

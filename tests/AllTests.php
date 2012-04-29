@@ -24,7 +24,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.7.0
+ * @version   1.8.0
  */
 
 chdir(dirname(__FILE__));

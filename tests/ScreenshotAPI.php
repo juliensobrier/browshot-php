@@ -13,8 +13,8 @@ require_once 'TestCase.php';
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.7.0
- * @link      http://browshot.com/api/documentation#simple
+ * @version   1.8.0
+ * @link      http://browshot.com/api/documentation#screenshot_create
  */
 class ScreenshotAPI extends TestCase
 {
@@ -245,6 +245,27 @@ class ScreenshotAPI extends TestCase
 		}
 	}
 
+	public function testScreenshotHost()
+	{
+		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
+		$screenshot_ids = array_keys((array)$screenshots);
+		$screenshot_id = $screenshot_ids[0];
+
+		$hosting = $this->browshot->screenshot_host($screenshot_id);
+		$this->assertEquals("error", $hosting->{'status'}, "Default hosting option not enabled for this account");
+
+		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 'browshot'));
+		$this->assertEquals("error", $hosting->{'status'}, "Browshot hosting option not enabled for this account");
+
+		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 's3'));
+		$this->assertEquals("error", $hosting->{'status'}, "S3hosting option not enabled for this account");
+
+		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 's3', 'bucket' => 'mine'));
+		$this->assertEquals("error", $hosting->{'status'}, "S3 hosting option not enabled for this account");
+
+		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 'cdn'));
+		$this->assertEquals("error", $hosting->{'status'}, "CDN hosting option not enabled for this account");
+	}
 }
 
 ?>
