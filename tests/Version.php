@@ -21,7 +21,7 @@ class Version extends TestCase
 	public function testApiVersion()
 	{
 		$version = $this->browshot->api_version();
-        $this->assertEquals("1.8", $version);
+        $this->assertEquals("1.9", $version);
 	}
 
 }

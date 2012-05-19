@@ -13,7 +13,7 @@ require_once 'TestCase.php';
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.8.0
+ * @version   1.9.0
  * @link      http://browshot.com/api/documentation#screenshot_create
  */
 class ScreenshotAPI extends TestCase
@@ -265,6 +265,12 @@ class ScreenshotAPI extends TestCase
 
 		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 'cdn'));
 		$this->assertEquals("error", $hosting->{'status'}, "CDN hosting option not enabled for this account");
+	}
+
+	public function testScreenshotShare()
+	{
+		$hosting = $this->browshot->screenshot_share(0);
+		$this->assertEquals("error", $hosting->{'status'}, "Wrong screenshot ID");
 	}
 }
 

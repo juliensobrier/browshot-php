@@ -13,14 +13,14 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.8.0
+ * @version   1.9.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  */
 
 class Browshot
 {
-	const version = '1.8.0';
+	const version = '1.9.0';
 
 	public function __construct($key, $base = 'https://api.browshot.com/api/v1/', $debug = 0)
     {
@@ -123,6 +123,12 @@ class Browshot
 	{
 		$parameters['id'] = $id;
 		return $this->return_reply('screenshot/host', $parameters);
+	}
+
+	public function screenshot_share($id = 0, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->return_reply('screenshot/share', $parameters);
 	}
 
 	public function screenshot_thumbnail($id = 0, $parameters = array())
