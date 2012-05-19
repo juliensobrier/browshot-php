@@ -13,15 +13,23 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.9.0
+ * @version   1.9.1
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
+ * @link      https://github.com/juliensobrier/browshot-php
  */
 
 class Browshot
 {
-	const version = '1.9.0';
+	const version = '1.9.1';
 
+	/**
+	 * Constructor
+     *
+	 * @param  string API key
+	 * @param  string Optional. Base URL for all API requests. You should use the default base provided by the library. Be careful if you decide to use HTTP instead of HTTPS as your API key could be sniffed and your account could be used without your consent.
+     * @param  int    Set to 1 to print debug output to the standard output. 0 (disabled) by default.
+	 */	
 	public function __construct($key, $base = 'https://api.browshot.com/api/v1/', $debug = 0)
     {
 		$this->_key = $key;
@@ -31,6 +39,15 @@ class Browshot
 
 	}
 
+    /**
+     * Get API version.
+     *
+     * The library version matches closely the API version it handles: Browshot 1.0.0 is the first release for the API 1.0, Browshot 1.1.1 is the second release for the API 1.1, etc.
+     *
+     * Browshot can handle most the API updates within the same major version, e.g. WebService::Browshot 1.0.0 should be compatible with the API 1.1 or 1.2.
+     *
+     * @return string
+     */
 	public function api_version()
 	{
 		list($major, $minor, $other) = split( "\.", Browshot::version, 3 );
@@ -38,6 +55,13 @@ class Browshot
 		return $major . "." . $minor;
 	}
 
+    /**
+     * Retrieve a screenshot in one function. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
+     *
+     * @param array See <a href="https://browshot.com/api/documentation#simple">https://browshot.com/api/documentation#simple</a> for the list of possible arguments.
+     *
+     * @return array
+     */
 	public function simple($parameters)
 	{
 		$url = $this->make_url('simple', $parameters);
@@ -46,6 +70,13 @@ class Browshot
 		return array('code' => $res->getResponseCode(), 'image' => $res->getBody());
 	}
 
+    /**
+     * Retrieve a screenshot and save it localy in one function. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
+     *
+     * @param array See <a href="https://browshot.com/api/documentation#simple">https://browshot.com/api/documentation#simple</a> for the list of possible arguments.
+     *
+     * @return array
+     */
 	public function simple_file($file, $parameters)
 	{
 		$data = $this->simple($parameters);
@@ -63,41 +94,103 @@ class Browshot
 		}
 	}
 
-
+    /**
+     * Return the list of instances.
+     *
+     * See <a href="https://browshot.com/api/documentation#instance_list">https://browshot.com/api/documentation#instance_list</a> for the response format and the list of arguments
+     *
+     * @param array
+     *
+     * @return array
+     */
 	public function instance_list($parameters = array())
 	{
 		return $this->return_reply('instance/list', $parameters );
 	}
 
+    /**
+     * Return the details of an instance.
+     *
+     * See <a href="https://browshot.com/api/documentation#instance_info">https://browshot.com/api/documentation#instance_info</a> for the response format and the list of arguments
+     *
+     * @param int   instance ID
+     * @param array
+     *
+     * @return array
+     */
 	public function instance_info($id = 0, $parameters = array())
 	{
 		$parameters['id'] = $id;
 		return $this->return_reply('instance/info', $parameters);
 	}
 
+    /**
+     * Create a private instance.
+     *
+     * See <a href="https://browshot.com/api/documentation#instance_create">https://browshot.com/api/documentation#instance_create</a> for the response format and the list of arguments
+     *
+     * @param array
+     *
+     * @return array
+     */
 	public function instance_create($parameters)
 	{
 		return $this->return_reply('instance/create', $parameters);
 	}
 
-
+    /**
+     * Return the list of browsers.
+     *
+     * See <a href="https://browshot.com/api/documentation#browser_list">https://browshot.com/api/documentation#browser_list</a> for the response format and the list of arguments
+     *
+     * @param array
+     *
+     * @return array
+     */
 	public function browser_list($parameters = array())
 	{
 		return $this->return_reply('browser/list', $parameters);
 	}
 
+    /**
+     * Return the details of a browser.
+     *
+     * See <a href="https://browshot.com/api/documentation#browser_info">https://browshot.com/api/documentation#browser_info</a> for the response format and the list of arguments
+     *
+     * @param int   browser ID
+     * @param array
+     *
+     * @return array
+     */
 	public function browser_info($id = 0, $parameters = array())
 	{
  		$parameters['id'] = $id;
 		return $this->return_reply('browser/info', $parameters);
 	}
 
+    /**
+     * Create a custom browser.
+     *
+     * See <a href="https://browshot.com/api/documentation#browser_create">https://browshot.com/api/documentation#browser_create</a> for the response format and the list of arguments
+     *
+     * @param array
+     *
+     * @return array
+     */
 	public function browser_create($parameters = array())
 	{
 		return $this->return_reply('browser/create', $parameters);
 	}
 
-
+    /**
+     * Request a screenshot. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_create">https://browshot.com/api/documentation#screenshot_create</a> for the response format and the list of arguments
+     *
+     * @param array  Must contain the url parameter
+     *
+     * @return array
+     */
 	public function screenshot_create($parameters = array())
 	{
 		if (array_key_exists('url', $parameters) == false) {
@@ -108,29 +201,78 @@ class Browshot
 		return $this->return_reply('screenshot/create', $parameters);
 	}
 
+    /**
+     * Get information about a screenshot requested previously.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_info">https://browshot.com/api/documentation#screenshot_info</a> for the response format and the list of arguments
+     *
+     * @param int   screenshot ID
+     * @param array
+     *
+     * @return array
+     */
 	public function screenshot_info($id = 0, $parameters = array())
 	{
  		$parameters['id'] = $id;
 		return $this->return_reply('screenshot/info', $parameters);
 	}
 
+    /**
+     * Get details about screenshots requested.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_list">https://browshot.com/api/documentation#screenshot_list</a> for the response format and the list of arguments
+     *
+     * @param array
+     *
+     * @return array
+     */
 	public function screenshot_list($parameters = array())
 	{
 		return $this->return_reply('screenshot/list', $parameters);
 	}
 
+    /**
+     * Host a screenshot or thumbnail.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_host">https://browshot.com/api/documentation#screenshot_host</a> for the response format and the list of arguments
+     *
+     * @param int   screenshot ID
+     * @param array
+     *
+     * @return array
+     */
 	public function screenshot_host($id = 0, $parameters = array())
 	{
 		$parameters['id'] = $id;
 		return $this->return_reply('screenshot/host', $parameters);
 	}
 
+    /**
+     * Share a screenshot.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_share">https://browshot.com/api/documentation#screenshot_share</a> for the response format and the list of arguments
+     *
+     * @param int   screenshot ID
+     * @param array
+     *
+     * @return array
+     */
 	public function screenshot_share($id = 0, $parameters = array())
 	{
 		$parameters['id'] = $id;
 		return $this->return_reply('screenshot/share', $parameters);
 	}
 
+    /**
+     * Retrieve the screenshot, or a thumbnail.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_thumbnail">https://browshot.com/api/documentation#screenshot_thumbnail</a> for the response format and the list of arguments
+     *
+     * @param int   screenshot ID
+     * @param array
+     *
+     * @return string Return an empty string if the image could not be retrieved, otherwise return the PNG content.
+     */
 	public function screenshot_thumbnail($id = 0, $parameters = array())
 	{
 		if ($id == 0) {
@@ -154,6 +296,17 @@ class Browshot
 		}
 	}
 
+    /**
+     * Retrieve the screenshot, or a thumbnail, and save it to a file.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_thumbnail">https://browshot.com/api/documentation#screenshot_thumbnail</a> for the response format and the list of arguments
+     *
+     * @param int    screenshot ID
+     * @param string file name
+     * @param array
+     *
+     * @return string Return an empty string if the image could not be retrieved or saved, otherwise return the file name.
+     */
 	public function screenshot_thumbnail_file($id = 0, $file, $parameters = array())
 	{
 		if ($file == '') {
@@ -180,7 +333,15 @@ class Browshot
 		}
 	}
 
-
+    /**
+     * Return information about the user account.
+     *
+     * See <a href="https://browshot.com/api/documentation#account_info">https://browshot.com/api/documentation#account_info</a> for the response format and the list of arguments
+     *
+     * @param array
+     *
+     * @return array
+     */
 	public function account_info($parameters = array())
 	{
 		return $this->return_reply('account/info', $parameters);
