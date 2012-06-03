@@ -14,6 +14,7 @@ Browshot can handle most the API updates within the same major version, e.g. bro
 
     PHP 5.1.6 or abaove
     PhpUnit 3.3.5 or above (to run unit tests)
+    pecl_http (http://php.net/manual/en/http.install.php)
 
 
 == Use Browshot
