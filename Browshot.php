@@ -13,7 +13,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.9.1
+ * @version   1.10.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -21,7 +21,7 @@
 
 class Browshot
 {
-	const version = '1.9.1';
+	const version = '1.10.0';
 
 	/**
 	 * Constructor
@@ -261,6 +261,22 @@ class Browshot
 	{
 		$parameters['id'] = $id;
 		return $this->return_reply('screenshot/share', $parameters);
+	}
+
+    /**
+     * Delete details of a screenshot.
+     *
+     * See <a href="https://browshot.com/api/documentation#screenshot_delete">https://browshot.com/api/documentation#screenshot_delete</a> for the response format and the list of arguments
+     *
+     * @param int   screenshot ID
+     * @param array
+     *
+     * @return array
+     */
+	public function screenshot_delete($id = 0, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->return_reply('screenshot/delete', $parameters);
 	}
 
     /**
