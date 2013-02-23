@@ -21,7 +21,7 @@
 
 class Browshot
 {
-	const version = '1.10.0';
+	const version = '1.10.1';
 
 	/**
 	 * Constructor
@@ -50,7 +50,7 @@ class Browshot
      */
 	public function api_version()
 	{
-		list($major, $minor, $other) = split( "\.", Browshot::version, 3 );
+		list($major, $minor, $other) = explode( ".", Browshot::version, 3 );
 
 		return $major . "." . $minor;
 	}
@@ -67,7 +67,7 @@ class Browshot
 		$url = $this->make_url('simple', $parameters);
 		$res = $this->http_get($url);
 
-		return array('code' => $res->getResponseCode(), 'image' => $res->getBody());
+		return array('code' => $res['http_code'], 'image' => $res['body']);
 	}
 
     /**
@@ -300,14 +300,14 @@ class Browshot
 		$url = $this->make_url('screenshot/thumbnail', $parameters);
 		$res = $this->http_get($url);
 
-		if ($res->getResponseCode() == "200")
+		if ($res['error'] == '' && $res['http_code'] == "200")
 		{
-			return $res->getBody();
+			return $res['body'];
 
 		} 
 		else
 		{
-			$this->error("Server sent back an error: " . $res->getResponseCode());
+			$this->error("Server sent back an error: " . $res['http_code']);
 			return '';
 		}
 	}
@@ -372,15 +372,15 @@ class Browshot
 
 		$res = $this->http_get($url);
 
-		if ($res->getResponseCode() == "200")
+		if ($res['error'] == '' && $res['http_code'] == "200")
 		{
-			return json_decode($res->getBody());
+			return json_decode($res['body']);
 
 		} 
 		else
 		{
-			$this->error("Server sent back an error: " . $res->getResponseCode());
-			return $self->generic_error($res->getBody());
+			$this->error("Server sent back an error: " . $res['http_code']);
+			return $self->generic_error($res['error']);
 
 		}
 	}
@@ -424,16 +424,50 @@ class Browshot
 
 	private function http_get($url)
 	{
-		$request = new HttpRequest($url, HttpRequest::METH_GET);
+		/*$request = new HttpRequest($url, HttpRequest::METH_GET);
 		$options = array(
-			'timeout'	=> 90,
-            'redirect'	=> 32,
-			'useragent'	=> 'PHP Browshot ' . Browshot::version
+			'timeout'		=> 90,
+			'connecttimeout'	=> 30,
+			'redirect'		=> 32,
+			'useragent'		=> 'PHP Browshot ' . Browshot::version
 		);
 		$request->setOptions($options);
 
 		$response = $request->send();
-		return $response;
+		return $response;*/
+
+	    $ch = curl_init($url);
+	    curl_setopt($ch, CURLOPT_HEADER, 0); 
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 90); 
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version)); 
+
+	    $response = curl_exec($ch);
+	    
+	    $error = curl_error($ch);
+	    $result = array( 
+              'body' => '',
+              'error' => '',
+              'http_code' => '',
+              'last_url' => ''
+	    );
+
+	    if ( $error != "" ) {
+	      $result['error'] = $error;
+	      curl_close($ch);
+
+	      return $result;
+	    }
+
+	    $header_size = curl_getinfo($ch,CURLINFO_HEADER_SIZE);
+	    $result['body'] = $response;
+	    $result['http_code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+	    $result['last_url'] = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL);
+
+	    curl_close($ch);
+	    return $result;
 	}
 }
 
