@@ -380,7 +380,7 @@ class Browshot
 		else
 		{
 			$this->error("Server sent back an error: " . $res['http_code']);
-			return $self->generic_error($res['error']);
+			return $this->generic_error($res['error']);
 
 		}
 	}
@@ -442,6 +442,8 @@ class Browshot
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
 	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
 	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version)); 
 
 	    $response = curl_exec($ch);
