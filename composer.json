@@ -1,0 +1,8 @@
+{
+    "name": "browshot-php/browshot",
+    "type": "library",
+    "description": "PHP library for Browshot API",
+    "autoload": {
+        "psr-0": {"Browshot": "src/"}
+    }
+}
