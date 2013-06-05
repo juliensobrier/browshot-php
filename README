@@ -41,6 +41,12 @@ To run the unit tests (and understand how to use Browshot)
             "browshot-php/browshot": "dev-composer"
         }
     }
+    
+    run composer update: `php composer.phar update` or `php composer.phar install`
+    
+    include composer packages and libraries:
+        
+    require "vendor/autoload.php";
 
 
 == Contributing to Browshot
