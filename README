@@ -25,6 +25,22 @@ Browshot can handle most the API updates within the same major version, e.g. bro
 To run the unit tests (and understand how to use Browshot)
 
     php tests/AllTests.php
+    
+    ###Install with Composer
+    An example composer.json file for Browshot
+    
+    {
+        "repositories": [
+            {
+                "type": "git",
+                "name": "browshot-php/browshot",
+                "url": "http://github.com/otternq/browshot-php"
+            }
+        ],
+        "require": {
+            "browshot-php/browshot": "dev-composer"
+        }
+    }
 
 
 == Contributing to Browshot
