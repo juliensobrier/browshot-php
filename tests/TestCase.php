@@ -3,12 +3,12 @@
 /**
  * PHPUnit3 framework
  */
-require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Autoload.php';
 
 /**
  * Browshot class to test
  */
-require_once dirname(__FILE__).'/../Browshot.php';
+require_once dirname(__FILE__).'/../src/Browshot.php';
 
 
 /**
