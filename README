@@ -34,7 +34,7 @@ To run the unit tests (and understand how to use Browshot)
             {
                 "type": "git",
                 "name": "browshot-php/browshot",
-                "url": "http://github.com/otternq/browshot-php"
+                "url": "http://github.com/juliensobrier/browshot-php"
             }
         ],
         "require": {
