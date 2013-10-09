@@ -221,29 +221,30 @@ class ScreenshotAPI extends TestCase
 		}
 	}
 
-	public function testScreenshotInfoDetails3()
-	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 3));
-		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
-
-		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',$info), "Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('response_code', $info), "Screenshot response_code is present");
-			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
-			$this->assertTrue(array_key_exists('started', 		$info), "Screenshot started is present");
-			$this->assertTrue(array_key_exists('finished', 		$info), "Screenshot finished is present");
-
-			$this->assertTrue(array_key_exists('images', 		$info), "Screenshot images are present");
-			$this->assertTrue(array_key_exists('iframes', 		$info), "Screenshot iframes are present");
-			$this->assertTrue(array_key_exists('scripts', 		$info), "Screenshot scripts are present");
-		}
-	}
+//	Details = 2 by default
+// 	public function testScreenshotInfoDetails3()
+// 	{
+// 		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
+// 		$screenshot_ids = array_keys((array)$screenshots);
+// 		$screenshot_id = $screenshot_ids[0];
+// 		$screenshot = $screenshots->{$screenshot_id};
+// 
+// 		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 3));
+// 		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
+// 
+// 		if ($info->{'status'} == 'finished') {
+// 			$this->assertTrue(array_key_exists('screenshot_url',	$info), "Screenshot screenshot_url is present");
+// 			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
+// 			$this->assertTrue(array_key_exists('response_code', 	$info), "Screenshot response_code is present");
+// 			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
+// 			$this->assertTrue(array_key_exists('started', 		$info), "Screenshot started is present");
+// 			$this->assertTrue(array_key_exists('finished', 		$info), "Screenshot finished is present");
+// 
+// 			$this->assertTrue(array_key_exists('images', 		$info), "Screenshot images are present");
+// 			$this->assertTrue(array_key_exists('iframes', 		$info), "Screenshot iframes are present");
+// 			$this->assertTrue(array_key_exists('scripts', 		$info), "Screenshot scripts are present");
+// 		}
+// 	}
 
 	public function testScreenshotHost()
 	{
@@ -258,7 +259,7 @@ class ScreenshotAPI extends TestCase
 		$this->assertEquals("error", $hosting->{'status'}, "Browshot hosting option not enabled for this account");
 
 		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 's3'));
-		$this->assertEquals("error", $hosting->{'status'}, "S3hosting option not enabled for this account");
+		$this->assertEquals("error", $hosting->{'status'}, "S3 hosting option not enabled for this account");
 
 		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 's3', 'bucket' => 'mine'));
 		$this->assertEquals("error", $hosting->{'status'}, "S3 hosting option not enabled for this account");
@@ -269,8 +270,20 @@ class ScreenshotAPI extends TestCase
 
 	public function testScreenshotShare()
 	{
-		$hosting = $this->browshot->screenshot_share(0);
-		$this->assertEquals("error", $hosting->{'status'}, "Wrong screenshot ID");
+		$share = $this->browshot->screenshot_share(0);
+		$this->assertEquals("error", $share->{'status'}, "Wrong screenshot ID");
+	}
+
+	public function testScreenshotSearch()
+	{
+		$screenshots = $this->browshot->screenshot_search('google.com',   array('details' => 0));
+		$screenshot_ids = array_keys((array)$screenshots);
+		$screenshot_id = $screenshot_ids[0];
+
+		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 2));
+		$this->assertTrue(array_key_exists('final_url', 	$info), 	"Screenshot final_url is correct");
+		$this->assertTrue(array_key_exists('response_code', 	$info), 	"Screenshot response_code is correct");
+		$this->assertTrue(array_key_exists('final_url', 	$info), 	"Screenshot content_type is correct");
 	}
 }
 
