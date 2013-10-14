@@ -22,9 +22,9 @@
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
- * @copyright 2012 Browshot
+ * @copyright 2013 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.8.0
+ * @version   1.13.0
  */
 
 chdir(dirname(__FILE__));
@@ -34,8 +34,6 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'PHPUnit/Autoload.php';
-// require_once 'PHPUnit/Framework.php';
-//require_once 'PHPUnit/TextUI/TestRunner.php';
 
 require_once 'Version.php';
 require_once 'AccountAPI.php';
@@ -57,16 +55,14 @@ class Browshot_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Browshot Tests');
         $suite->addTestSuite('Version');
-        $suite->addTestSuite('AccountAPI');
-        $suite->addTestSuite('BrowserAPI');
-        $suite->addTestSuite('InstanceAPI');
+//         $suite->addTestSuite('AccountAPI');
+//         $suite->addTestSuite('BrowserAPI');
+//         $suite->addTestSuite('InstanceAPI');
         $suite->addTestSuite('ScreenshotAPI');
-        $suite->addTestSuite('SimpleAPI');
-        $suite->addTestSuite('ThumbnailAPI');
+//         $suite->addTestSuite('SimpleAPI');
+//         $suite->addTestSuite('ThumbnailAPI');
         return $suite;
     }
-
-    // }}}
 }
 
 if (PHPUnit_MAIN_METHOD == 'Browshot_AllTests::main') {

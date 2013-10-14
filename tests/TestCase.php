@@ -18,7 +18,7 @@ require_once dirname(__FILE__).'/../src/Browshot.php';
 abstract class TestCase extends PHPUnit_Framework_TestCase
 {
 
-	/**
+    /**
      * @var Browshot
      */
     protected $browshot = null;

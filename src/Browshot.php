@@ -13,7 +13,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2013 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.12.0
+ * @version   1.13.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -21,7 +21,7 @@
 
 class Browshot
 {
-	const version = '1.12.0';
+	const version = '1.13.0';
 
 	/**
 	 * Constructor
@@ -280,6 +280,40 @@ class Browshot
 	}
 
 	/**
+	* Get the HTML code of the rendered page.
+	*
+	* See <a href="https://browshot.com/api/documentation#screenshot_html">https://browshot.com/api/documentation#screenshot_html</a> for the response format and the list of arguments
+	*
+	* @param int   screenshot ID
+	* @param array
+	*
+	* @return string
+	*/
+	public function screenshot_html($id = 0, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->return_string('screenshot/html', $parameters);
+	}
+
+	/**
+	* Request multiple screenshots.
+	*
+	* See <a href="https://browshot.com/api/documentation#screenshot_multiple">https://browshot.com/api/documentation#screenshot_multiplel</a> for the response format and the list of arguments
+	*
+	* @param array   URLs
+	* @param array   instances
+	* @param array
+	*
+	* @return array
+	*/
+	public function screenshot_multiple($urls = array(), $instances = array(), $parameters = array())
+	{
+		$parameters['urls'] = $urls;
+		$parameters['instances'] = $instances;
+		return (array)$this->return_reply('screenshot/multiple', $parameters);
+	}
+
+	/**
 	* Get details about screenshots requested.
 	*
 	* See <a href="https://browshot.com/api/documentation#screenshot_search">https://browshot.com/api/documentation#screenshot_search</a> for the response format and the list of arguments
@@ -380,7 +414,19 @@ class Browshot
 	}
 
 
+	private function return_string($action, $parameters = array())
+	{
+		$url = $this->make_url($action, $parameters);
 
+		$res = $this->http_get($url);
+
+		if ($res['http_code'] != "200")
+		{
+			$this->error("Server sent back an error: " . $res['http_code']);
+		}
+
+		return $res['body'];
+	}
 
 	private function return_reply($action, $parameters = array())
 	{
@@ -406,7 +452,19 @@ class Browshot
 		$url = $this->_base . $action . "?key=" . urlencode($this->_key);
 		
 		foreach ($parameters as $key => $value) {
-			$url .= '&' . urlencode($key) . '=' . urlencode($value);
+			if ($key == 'urls') {
+			  foreach ((array)$value as $uri) {
+			    $url .= '&url=' . urlencode($uri);
+			  }
+			}
+			elseif($key == 'instances') {
+			  foreach ($value as $instance_id) {
+			    $url .= '&instance_id=' . urlencode($instance_id);
+			  }
+			}
+			else {
+			  $url .= '&' . urlencode($key) . '=' . urlencode($value);
+			}
 		}
 
 		$this->info($url);

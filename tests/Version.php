@@ -13,7 +13,7 @@ require_once 'TestCase.php';
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2012 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.12.0
+ * @version   1.13.0
  */
 class Version extends TestCase
 {
@@ -21,7 +21,7 @@ class Version extends TestCase
 	public function testApiVersion()
 	{
 		$version = $this->browshot->api_version();
-        $this->assertEquals("1.12", $version);
+		$this->assertEquals("1.13", $version);
 	}
 
 }

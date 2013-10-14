@@ -6,7 +6,7 @@
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
- * @copyright 2012 Browshot
+ * @copyright 2013 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
  * @version   1.6.0
  */
