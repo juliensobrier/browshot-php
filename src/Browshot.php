@@ -11,9 +11,9 @@
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
- * @copyright 2013 Julien Sobrier, Browshot
+ * @copyright 2014 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.13.0
+ * @version   1.14.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -21,7 +21,7 @@
 
 class Browshot
 {
-	const version = '1.13.0';
+	const version = '1.14.0';
 
 	/**
 	 * Constructor
@@ -377,7 +377,7 @@ class Browshot
 	{
 		if ($file == '') {
 			$this->error("Missing file in screenshot_thumbnail_file");
-			return $this->generic_error("MMissing file in screenshot_thumbnail_file");
+			return $this->generic_error("Missing file in screenshot_thumbnail_file");
 		}
 	
 		if ($id == 0) {
@@ -400,6 +400,44 @@ class Browshot
 	}
 
     /**
+     * Request multiple screenshots from a text file.
+     *
+     * See <a href="https://browshot.com/api/documentation#batch_create">https://browshot.com/api/documentation#batch_create</a> for the response format and the list of arguments
+     *
+     * @param string file name
+     * @param array
+     *
+     * @return array
+     */
+	public function batch_create($file = '', $parameters = array())
+	{
+		if ($file == '') {
+			$this->error("Missing file in batch_create");
+			return $this->generic_error("Missing file in batch_create");
+		}
+	
+		$parameters['file'] = $file;
+		return $this->return_post_reply('batch/create', $parameters);
+	}
+
+	/**
+	* Get details about screenshots requested.
+	*
+	* See <a href="https://browshot.com/api/documentation#batch_info">https://browshot.com/api/documentation#batch_info</a> for the response format and the list of arguments
+	*
+	* @param int    abtch ID
+	* @param array
+	*
+	* @return array
+	*/
+	public function batch_info($id = 0, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->return_reply('batch/info', $parameters);
+	}
+
+
+    /**
      * Return information about the user account.
      *
      * See <a href="https://browshot.com/api/documentation#account_info">https://browshot.com/api/documentation#account_info</a> for the response format and the list of arguments
@@ -413,6 +451,24 @@ class Browshot
 		return $this->return_reply('account/info', $parameters);
 	}
 
+
+
+	private function return_post_string($action, $parameters = array())
+	{
+		$file = $parameters['file'];
+		unset($parameters['file']);
+
+		$url = $this->make_url($action, $parameters);
+
+		$res = $this->http_post($url, $file);
+
+		if ($res['http_code'] != "200")
+		{
+			$this->error("Server sent back an error: " . $res['http_code']);
+		}
+
+		return $res['body'];
+	}
 
 	private function return_string($action, $parameters = array())
 	{
@@ -433,6 +489,28 @@ class Browshot
 		$url = $this->make_url($action, $parameters);
 
 		$res = $this->http_get($url);
+
+		if ($res['error'] == '' && $res['http_code'] == "200")
+		{
+			return json_decode($res['body']);
+
+		} 
+		else
+		{
+			$this->error("Server sent back an error: " . $res['http_code']);
+			return $this->generic_error($res['error']);
+
+		}
+	}
+
+	private function return_post_reply($action, $parameters = array())
+	{
+		$file = $parameters['file'];
+		unset($parameters['file']);
+
+		$url = $this->make_url($action, $parameters);
+
+		$res = $this->http_post($url, $file);
 
 		if ($res['error'] == '' && $res['http_code'] == "200")
 		{
@@ -507,6 +585,46 @@ class Browshot
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
 	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version)); 
+
+	    $response = curl_exec($ch);
+	    
+	    $error = curl_error($ch);
+	    $result = array( 
+              'body' => '',
+              'error' => '',
+              'http_code' => '',
+              'last_url' => ''
+	    );
+
+	    if ( $error != "" ) {
+	      $result['error'] = $error;
+	      curl_close($ch);
+
+	      return $result;
+	    }
+
+	    $header_size = curl_getinfo($ch,CURLINFO_HEADER_SIZE);
+	    $result['body'] = $response;
+	    $result['http_code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+	    $result['last_url'] = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL);
+
+	    curl_close($ch);
+	    return $result;
+	}
+
+	private function http_post($url, $file = '')
+	{
+	    $ch = curl_init($url);
+	    curl_setopt($ch, CURLOPT_POST,1);
+	    curl_setopt($ch, CURLOPT_HEADER, 0); 
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 90); 
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version)); 
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, array('file' => "@$file"));
 
 	    $response = curl_exec($ch);
 	    

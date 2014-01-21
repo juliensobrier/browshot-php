@@ -165,11 +165,11 @@ class ScreenshotAPI extends TestCase
 		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
 
 		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',$info), "Screenshot screenshot_url is present");
+			$this->assertTrue(array_key_exists('screenshot_url',	$info), "Screenshot screenshot_url is present");
 			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
 
-			$this->assertFalse(array_key_exists('response_code', $info), "Screenshot response_code is NOT present");
-			$this->assertFalse(array_key_exists('content_type', $info), "Screenshot content_type is NOT present");
+			$this->assertFalse(array_key_exists('response_code', 	$info), "Screenshot response_code is NOT present");
+			$this->assertFalse(array_key_exists('content_type', 	$info), "Screenshot content_type is NOT present");
 			$this->assertFalse(array_key_exists('finished', 	$info), "Screenshot finished is NOT present");
 			$this->assertFalse(array_key_exists('images', 		$info), "Screenshot images are NOT present");
 		}
@@ -186,9 +186,9 @@ class ScreenshotAPI extends TestCase
 		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
 
 		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',$info), "Screenshot screenshot_url is present");
+			$this->assertTrue(array_key_exists('screenshot_url',	$info), "Screenshot screenshot_url is present");
 			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('response_code', $info), "Screenshot response_code is present");
+			$this->assertTrue(array_key_exists('response_code', 	$info), "Screenshot response_code is present");
 			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
 
 			$this->assertFalse(array_key_exists('started', 		$info), "Screenshot started is NOT present");
@@ -288,7 +288,7 @@ class ScreenshotAPI extends TestCase
 
 	public function testScreenshotMultiple()
 	{
-		$screenshots = $browshot->screenshot_multiple(array('http://mobilito.net/', 'http://browshot.com/'), array(12, 27));
+		$screenshots = $this->browshot->screenshot_multiple(array('http://mobilito.net/', 'http://browshot.com/'), array(12, 27));
 		$this->assertEquals(4, count($screenshots), "Wrong number of screenshots");
 	}
 }
