@@ -3,6 +3,6 @@
     "type": "library",
     "description": "PHP library for Browshot API",
     "autoload": {
-        "psr-0": {"Browshot": "src/"}
+        "psr-4": {"Browshot\\": "src/"}
     }
 }
