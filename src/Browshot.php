@@ -13,7 +13,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2014 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.14.0
+ * @version   1.14.1
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -21,7 +21,7 @@
 
 class Browshot
 {
-	const version = '1.14.0';
+	const version = '1.14.1';
 
 	/**
 	 * Constructor
@@ -577,10 +577,10 @@ class Browshot
 	private function http_get($url)
 	{
 	    $ch = curl_init($url);
-	    curl_setopt($ch, CURLOPT_HEADER, 0); 
-	    curl_setopt($ch, CURLOPT_TIMEOUT, 90); 
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	    curl_setopt($ch, CURLOPT_HEADER, false); 
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 250); 
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
@@ -615,11 +615,11 @@ class Browshot
 	private function http_post($url, $file = '')
 	{
 	    $ch = curl_init($url);
-	    curl_setopt($ch, CURLOPT_POST,1);
-	    curl_setopt($ch, CURLOPT_HEADER, 0); 
-	    curl_setopt($ch, CURLOPT_TIMEOUT, 90); 
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	    curl_setopt($ch, CURLOPT_POST,true);
+	    curl_setopt($ch, CURLOPT_HEADER, false); 
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 250); 
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
