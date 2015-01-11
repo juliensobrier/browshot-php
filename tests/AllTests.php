@@ -22,9 +22,9 @@
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
- * @copyright 2013 Browshot
+ * @copyright 2015 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.13.0
+ * @version   1.14.0
  */
 
 chdir(dirname(__FILE__));
@@ -55,12 +55,12 @@ class Browshot_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Browshot Tests');
         $suite->addTestSuite('Version');
-//         $suite->addTestSuite('AccountAPI');
-//         $suite->addTestSuite('BrowserAPI');
-//         $suite->addTestSuite('InstanceAPI');
+        $suite->addTestSuite('AccountAPI');
+        $suite->addTestSuite('BrowserAPI');
+        $suite->addTestSuite('InstanceAPI');
         $suite->addTestSuite('ScreenshotAPI');
-//         $suite->addTestSuite('SimpleAPI');
-//         $suite->addTestSuite('ThumbnailAPI');
+        $suite->addTestSuite('SimpleAPI');
+        $suite->addTestSuite('ThumbnailAPI');
         return $suite;
     }
 }

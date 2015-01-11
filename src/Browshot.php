@@ -1,5 +1,6 @@
 <?php
-namespace Browshot;
+
+// namespace Browshot;
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
@@ -12,7 +13,7 @@ namespace Browshot;
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
- * @copyright 2014 Julien Sobrier, Browshot
+ * @copyright 2015 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
  * @version   1.14.3
  * @link      http://browshot.com/

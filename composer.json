@@ -1,7 +1,7 @@
 {
     "name": "browshot-php/browshot",
     "type": "library",
-    "description": "PHP library for Browshot API",
+    "description": "PHP library for Browshot API: take screenshots of any web page",
     "autoload": {
         "psr-0": {"Browshot": "src/"}
     },

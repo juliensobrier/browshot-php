@@ -67,25 +67,6 @@ class BrowserAPI extends TestCase
 		$this->assertTrue(array_key_exists('mobile', 	  $browser), "Browser mobile exists");
 		$this->assertTrue(array_key_exists('flash', 	  $browser), "Browser flash exists");
 	}
-
-// 	Browswer creation is disabled for most accounts
-	public function testBrowserCreate()
-	{
-		$browser = $this->browshot->browser_create(array('mobile' => 1, 'flash' => 1, 'user_agent' => 'test'));
-
-// 		var_dump($browser);
-// 		$this->assertTrue(array_key_exists('user_agent',  $browser), "Browser user_agent exists");
-// 		$this->assertTrue(array_key_exists('appname', 	  $browser), "Browser appname exists");
-// 		$this->assertTrue(array_key_exists('vendorsub',   $browser), "Browser vendorsub exists");
-// 		$this->assertTrue(array_key_exists('appcodename', $browser), "Browser appcodename exists");
-// 		$this->assertTrue(array_key_exists('platform', 	  $browser), "Browser platform exists");
-// 		$this->assertTrue(array_key_exists('vendor', 	  $browser), "Browser vendor exists");
-// 		$this->assertTrue(array_key_exists('appversion',  $browser), "Browser appversion exists");
-// 		$this->assertTrue(array_key_exists('javascript',  $browser), "Browser javascript exists");
-// 		$this->assertTrue(array_key_exists('mobile', 	  $browser), "Browser mobile exists");
-// 		$this->assertTrue(array_key_exists('flash', 	  $browser), "Browser flash exists");
-	}
-
 }
 
 ?>

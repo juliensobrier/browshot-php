@@ -43,7 +43,7 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
 	public function setUp()
     {
         $this->_old_error_level = error_reporting(E_ALL | E_STRICT);
-        $this->browshot = new Browshot($this->config['key'], $this->config['base'], $this->config['debug']);
+        $this->browshot = new Browshot($this->config['key'], $this->config['debug'], $this->config['base']);
     }
 
 

@@ -24,23 +24,10 @@ Browshot can handle most the API updates within the same major version, e.g. bro
 
 To run the unit tests (and understand how to use Browshot)
 
-    php tests/AllTests.php
+    phpunit
     
     ###Install with Composer
-    An example composer.json file for Browshot
-    
-    {
-        "repositories": [
-            {
-                "type": "git",
-                "name": "browshot-php/browshot",
-                "url": "http://github.com/juliensobrier/browshot-php"
-            }
-        ],
-        "require": {
-            "browshot-php/browshot": "dev-composer"
-        }
-    }
+    composer.json can be found at https://raw.githubusercontent.com/juliensobrier/browshot-php/master/composer.json
     
     run composer update: `php composer.phar update` or `php composer.phar install`
     
@@ -61,4 +48,4 @@ To run the unit tests (and understand how to use Browshot)
 
 == Copyright
 
-Copyright (c) 2012-2013 Julien Sobrier
+Copyright (c) 2012-2015 Julien Sobrier

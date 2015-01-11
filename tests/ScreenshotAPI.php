@@ -11,9 +11,9 @@ require_once 'TestCase.php';
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
- * @copyright 2012 Browshot
+ * @copyright 2015 Browshot
  * @license   http://www.gnu.org/copyleft/lesser.html LGPL License 2.1
- * @version   1.9.0
+ * @version   1.14.0
  * @link      http://browshot.com/api/documentation#screenshot_create
  */
 class ScreenshotAPI extends TestCase
@@ -34,27 +34,27 @@ class ScreenshotAPI extends TestCase
 		$screenshot = $this->browshot->screenshot_create(array('url' => 'http://browshot.com/'));
 		$this->assertFalse(array_key_exists('error', 	$screenshot));
 
-		$this->assertTrue(array_key_exists('id', 		$screenshot), 	"Screenshot ID is present");
+		$this->assertTrue(array_key_exists('id', 	$screenshot), 	"Screenshot ID is present");
 		$this->assertTrue(array_key_exists('status', 	$screenshot),	"Screenshot status is present");
 		$this->assertTrue(array_key_exists('priority', 	$screenshot),	"Screenshot priority is present");
 
 		if ($screenshot->{'status'} == 'finished') {
 			$this->assertTrue(array_key_exists('screenshot_url',	$screenshot),	"Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('url', 			 	$screenshot),	"Screenshot url is present");
-			$this->assertTrue(array_key_exists('size', 			 	$screenshot),	"Screenshot size is present");
-			$this->assertTrue(array_key_exists('width', 			$screenshot),	"Screenshot width is present");
-			$this->assertTrue(array_key_exists('height', 			$screenshot),	"Screenshot height is present");
-			$this->assertTrue(array_key_exists('request_time', 		$screenshot),	"Screenshot request_time is present");
-			$this->assertTrue(array_key_exists('started', 			$screenshot),	"Screenshot started is present");
-			$this->assertTrue(array_key_exists('load', 			 	$screenshot),	"Screenshot load is present");
-			$this->assertTrue(array_key_exists('content', 			$screenshot),	"Screenshot content is present");
-			$this->assertTrue(array_key_exists('finished', 			$screenshot),	"Screenshot finished is present");
-			$this->assertTrue(array_key_exists('instance_id', 		$screenshot),	"Screenshot instance_id is present");
+			$this->assertTrue(array_key_exists('url', 		$screenshot),	"Screenshot url is present");
+			$this->assertTrue(array_key_exists('size', 		$screenshot),	"Screenshot size is present");
+			$this->assertTrue(array_key_exists('width', 		$screenshot),	"Screenshot width is present");
+			$this->assertTrue(array_key_exists('height', 		$screenshot),	"Screenshot height is present");
+			$this->assertTrue(array_key_exists('request_time', 	$screenshot),	"Screenshot request_time is present");
+			$this->assertTrue(array_key_exists('started', 		$screenshot),	"Screenshot started is present");
+			$this->assertTrue(array_key_exists('load', 		$screenshot),	"Screenshot load is present");
+			$this->assertTrue(array_key_exists('content', 		$screenshot),	"Screenshot content is present");
+			$this->assertTrue(array_key_exists('finished', 		$screenshot),	"Screenshot finished is present");
+			$this->assertTrue(array_key_exists('instance_id', 	$screenshot),	"Screenshot instance_id is present");
 			$this->assertTrue(array_key_exists('response_code', 	$screenshot),	"Screenshot response_code is present");
-			$this->assertTrue(array_key_exists('final_url', 		$screenshot),	"Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('content_type', 		$screenshot),	"Screenshot content_type is present");
-			$this->assertTrue(array_key_exists('scale', 			$screenshot),	"Screenshot scale is present");
-			$this->assertTrue(array_key_exists('cost', 				$screenshot),	"Screenshot cost is present");
+			$this->assertTrue(array_key_exists('final_url', 	$screenshot),	"Screenshot final_url is present");
+			$this->assertTrue(array_key_exists('content_type', 	$screenshot),	"Screenshot content_type is present");
+			$this->assertTrue(array_key_exists('scale', 		$screenshot),	"Screenshot scale is present");
+			$this->assertTrue(array_key_exists('cost', 		$screenshot),	"Screenshot cost is present");
 		}
 	}
 
@@ -67,23 +67,23 @@ class ScreenshotAPI extends TestCase
 		$screenshot_id = $screenshot_ids[0];
 		$screenshot = $screenshots->{$screenshot_id};
 
-		$this->assertGreaterThan(0, 						$screenshot_id, "Screenshot ID is correct");
-		$this->assertTrue(array_key_exists('id', 			$screenshot),	"Screenshot ID is present");
+		$this->assertGreaterThan(0, 				$screenshot_id, "Screenshot ID is correct");
+		$this->assertTrue(array_key_exists('id', 		$screenshot),	"Screenshot ID is present");
 		$this->assertTrue(array_key_exists('status', 		$screenshot),	"Screenshot status is present");
 		$this->assertTrue(array_key_exists('priority', 		$screenshot),	"Screenshot priority is present");
-		$this->assertTrue(array_key_exists('screenshot_url',$screenshot),	"Screenshot screenshot_url is present");
-		$this->assertTrue(array_key_exists('url', 			$screenshot),	"Screenshot url is present");
-		$this->assertTrue(array_key_exists('size', 			$screenshot),	"Screenshot size is present");
+		$this->assertTrue(array_key_exists('screenshot_url',	$screenshot),	"Screenshot screenshot_url is present");
+		$this->assertTrue(array_key_exists('url', 		$screenshot),	"Screenshot url is present");
+		$this->assertTrue(array_key_exists('size', 		$screenshot),	"Screenshot size is present");
 		$this->assertTrue(array_key_exists('width', 		$screenshot),	"Screenshot width is present");
 		$this->assertTrue(array_key_exists('height', 		$screenshot),	"Screenshot height is present");
 		$this->assertTrue(array_key_exists('request_time', 	$screenshot),	"Screenshot request_time is present");
 		$this->assertTrue(array_key_exists('started', 		$screenshot),	"Screenshot started is present");
-		$this->assertTrue(array_key_exists('load', 			$screenshot),	"Screenshot load is present");
+		$this->assertTrue(array_key_exists('load', 		$screenshot),	"Screenshot load is present");
 		$this->assertTrue(array_key_exists('content', 		$screenshot),	"Screenshot content is present");
 		$this->assertTrue(array_key_exists('finished', 		$screenshot),	"Screenshot finished is present");
 		$this->assertTrue(array_key_exists('instance_id', 	$screenshot),	"Screenshot instance_id is present");
 		$this->assertTrue(array_key_exists('final_url', 	$screenshot),	"Screenshot final_url is present");
-		$this->assertTrue(array_key_exists('response_code', $screenshot),	"Screenshot response_code is NOT present");
+		$this->assertTrue(array_key_exists('response_code', 	$screenshot),	"Screenshot response_code is NOT present");
 		$this->assertTrue(array_key_exists('content_type', 	$screenshot),	"Screenshot content_type is NOT present");
 		$this->assertTrue(array_key_exists('scale', 		$screenshot),	"Screenshot scale is present");
 		$this->assertTrue(array_key_exists('cost', 		$screenshot),		"Screenshot cost is present");
@@ -288,6 +288,7 @@ class ScreenshotAPI extends TestCase
 
 	public function testScreenshotMultiple()
 	{
+		$this->browshot->_debug = 1;
 		$screenshots = $this->browshot->screenshot_multiple(array('http://mobilito.net/', 'http://browshot.com/'), array(12, 27));
 		$this->assertEquals(4, count($screenshots), "Wrong number of screenshots");
 	}
