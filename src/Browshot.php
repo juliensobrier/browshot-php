@@ -13,7 +13,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2014 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.14.1
+ * @version   1.14.3
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -21,16 +21,17 @@
 
 class Browshot
 {
-	const version = '1.14.1';
+	const version = '1.14.3';
 
 	/**
 	 * Constructor
 	 *
+	 * IMPORTANT: the order of the arguments base and debug has been switched
 	 * @param  string API key
-	 * @param  string Optional. Base URL for all API requests. You should use the default base provided by the library. Be careful if you decide to use HTTP instead of HTTPS as your API key could be sniffed and your account could be used without your consent.
 	 * @param  int    Set to 1 to print debug output to the standard output. 0 (disabled) by default.
+	 * @param  string Optional. Base URL for all API requests. You should use the default base provided by the library. Be careful if you decide to use HTTP instead of HTTPS as your API key could be sniffed and your account could be used without your consent.
 	 */	
-	public function __construct($key, $base = 'https://api.browshot.com/api/v1/', $debug = 0)
+	public function __construct($key, $debug = 0, $base = 'https://api.browshot.com/api/v1/')
 	{
 		$this->_key = $key;
 		$this->_base = $base;
@@ -56,7 +57,7 @@ class Browshot
 	}
 
 	/**
-	* Retrieve a screenshot in one function. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
+	* Retrieve a screenshot in one function. Note: by default, screenshots are cached for 24 hours. You can tune this value with the cache=X parameter.
 	*
 	* @param array See <a href="https://browshot.com/api/documentation#simple">https://browshot.com/api/documentation#simple</a> for the list of possible arguments.
 	*
@@ -67,7 +68,7 @@ class Browshot
 		$url = $this->make_url('simple', $parameters);
 		$res = $this->http_get($url);
 
-		return array('code' => $res['http_code'], 'image' => $res['body']);
+		return array('code' => $res['http_code'], 'image' => $res['body'], 'error' => $res['error']);
 	}
 
 	/**
@@ -90,6 +91,7 @@ class Browshot
 		}
 		else {
 			$this->error("No thumbnail retrieved");
+			$this->error( $data['error'] );
 			return array('code' => $data['code'], 'file' => '');
 		}
 	}
@@ -481,6 +483,7 @@ class Browshot
 			$this->error("Server sent back an error: " . $res['http_code']);
 		}
 
+		$this->info($res['body']);
 		return $res['body'];
 	}
 
@@ -489,6 +492,7 @@ class Browshot
 		$url = $this->make_url($action, $parameters);
 
 		$res = $this->http_get($url);
+		$this->info($res['body']);
 
 		if ($res['error'] == '' && $res['http_code'] == "200")
 		{
@@ -511,6 +515,7 @@ class Browshot
 		$url = $this->make_url($action, $parameters);
 
 		$res = $this->http_post($url, $file);
+		$this->info($res['body']);
 
 		if ($res['error'] == '' && $res['http_code'] == "200")
 		{
@@ -582,9 +587,11 @@ class Browshot
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
 	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
-	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
-	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version)); 
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive"));
+	    //curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+	    //curl_setopt($ch, CURLOPT_VERBOSE, true);
 
 	    $response = curl_exec($ch);
 	    
@@ -623,8 +630,9 @@ class Browshot
 	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
-	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version)); 
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive")); 
 	    curl_setopt($ch, CURLOPT_POSTFIELDS, array('file' => "@$file"));
+	    //curl_setopt($ch, CURLOPT_RETURNTRANSFER, FALSE);
 
 	    $response = curl_exec($ch);
 	    
