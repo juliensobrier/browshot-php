@@ -3,6 +3,7 @@
     "type": "library",
     "description": "PHP library for Browshot API",
     "autoload": {
+<<<<<<< HEAD
         "psr-0": {"Browshot": "src/"}
     },
     "license": "MIT",
@@ -17,5 +18,8 @@
     ],
     "require": {
         "php": ">=5.1.6"
+=======
+        "psr-4": {"Browshot\\": "src/"}
+>>>>>>> 043ab0f92cec95d7dd6fd49e920f0830ce18e8d2
     }
 }
