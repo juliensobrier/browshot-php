@@ -15,7 +15,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2015 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.14.3
+ * @version   1.16.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -23,7 +23,7 @@
 
 class Browshot
 {
-	const version = '1.14.3';
+	const version = '1.16.0';
 
 	/**
 	 * Constructor
@@ -170,20 +170,6 @@ class Browshot
 	{
  		$parameters['id'] = $id;
 		return $this->return_reply('browser/info', $parameters);
-	}
-
-	/**
-	* Create a custom browser.
-	*
-	* See <a href="https://browshot.com/api/documentation#browser_create">https://browshot.com/api/documentation#browser_create</a> for the response format and the list of arguments
-	*
-	* @param array
-	*
-	* @return array
-	*/
-	public function browser_create($parameters = array())
-	{
-		return $this->return_reply('browser/create', $parameters);
 	}
 
 	/**
@@ -366,17 +352,17 @@ class Browshot
 		}
 	}
 
-    /**
-     * Retrieve the screenshot, or a thumbnail, and save it to a file.
-     *
-     * See <a href="https://browshot.com/api/documentation#screenshot_thumbnail">https://browshot.com/api/documentation#screenshot_thumbnail</a> for the response format and the list of arguments
-     *
-     * @param int    screenshot ID
-     * @param string file name
-     * @param array
-     *
-     * @return string Return an empty string if the image could not be retrieved or saved, otherwise return the file name.
-     */
+	/**
+		* Retrieve the screenshot, or a thumbnail, and save it to a file.
+		*
+		* See <a href="https://browshot.com/api/documentation#screenshot_thumbnail">https://browshot.com/api/documentation#screenshot_thumbnail</a> for the response format and the list of arguments
+		*
+		* @param int    screenshot ID
+		* @param string file name
+		* @param array
+		*
+		* @return string Return an empty string if the image could not be retrieved or saved, otherwise return the file name.
+		*/
 	public function screenshot_thumbnail_file($id = 0, $file, $parameters = array())
 	{
 		if ($file == '') {

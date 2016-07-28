@@ -14,7 +14,6 @@ Browshot can handle most the API updates within the same major version, e.g. bro
 
     PHP 5.1.6 or abaove
     PhpUnit 3.3.5 or above (to run unit tests)
-    (Version 10.0.1 siwtched to cURL)
 
 
 == Use Browshot
@@ -48,4 +47,4 @@ To run the unit tests (and understand how to use Browshot)
 
 == Copyright
 
-Copyright (c) 2012-2015 Julien Sobrier
+Copyright (c) 2012-2016 Julien Sobrier
