@@ -1,4 +1,4 @@
-= Browshot (PHP)
+# Browshot (PHP)
 
 Browshot (http://www.browshot.com/) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc. Browshot has full Flash, JavaScript, CSS, & HTML5 support.
 
@@ -10,13 +10,13 @@ Browshot can handle most the API updates within the same major version, e.g. bro
 
 
 
-== Requirements
+## Requirements
 
     PHP 5.1.6 or abaove
     PhpUnit 3.3.5 or above (to run unit tests)
 
 
-== Use Browshot
+## Use Browshot
 
     git clone https://github.com/juliensobrier/browshot-php
     include Browshot.php
@@ -25,7 +25,7 @@ To run the unit tests (and understand how to use Browshot)
 
     phpunit
     
-    ###Install with Composer
+    ### Install with Composer
     composer.json can be found at https://raw.githubusercontent.com/juliensobrier/browshot-php/master/composer.json
     
     run composer update: `php composer.phar update` or `php composer.phar install`
@@ -35,7 +35,7 @@ To run the unit tests (and understand how to use Browshot)
     require "vendor/autoload.php";
 
 
-== Contributing to Browshot
+## Contributing to Browshot
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
@@ -45,6 +45,6 @@ To run the unit tests (and understand how to use Browshot)
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-== Copyright
+## Copyright
 
 Copyright (c) 2012-2016 Julien Sobrier
