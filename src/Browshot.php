@@ -7,15 +7,15 @@
 /**
  * Browshot is a package to use the Browshot screenshot service REST API.
  *
- * Browshot is a service to take realtime screemshots of web pages in any 
- * screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc.
+ * Browshot is a service to take realtime screenshots of web pages in any 
+ * screen size, as any device: Firefox, Chrome, iPhone, etc.
  *
  * @category  Services
  * @package   Browshot
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2015 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.16.0
+ * @version   1.16.1
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -23,7 +23,7 @@
 
 class Browshot
 {
-	const version = '1.16.0';
+	const version = '1.16.1';
 
 	/**
 	 * Constructor
@@ -491,7 +491,6 @@ class Browshot
 		{
 			$this->error("Server sent back an error: " . $res['http_code']);
 			return $this->generic_error($res['error']);
-
 		}
 	}
 
@@ -609,17 +608,29 @@ class Browshot
 
 	private function http_post($url, $file = '')
 	{
+		$data = array('file' => "@$file");
+			
+			
+		if (class_exists('CURLFile')) {
+			$mime = mime_content_type($file);
+			$info = pathinfo($file);
+			$name = $info['basename'];
+			$output = new CURLFile($file, $mime, $name);
+				
+			$data = array('file' => $output);
+		}
+	
 	    $ch = curl_init($url);
 	    curl_setopt($ch, CURLOPT_POST,true);
-	    curl_setopt($ch, CURLOPT_HEADER, false); 
+	    curl_setopt($ch, CURLOPT_HEADER, true); 
 	    curl_setopt($ch, CURLOPT_TIMEOUT, 250); 
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
 	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	    curl_setopt($ch, CURLOPT_MAXREDIRS, 32);
+	    curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
 	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive")); 
-	    curl_setopt($ch, CURLOPT_POSTFIELDS, array('file' => "@$file"));
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 	    //curl_setopt($ch, CURLOPT_RETURNTRANSFER, FALSE);
 
 	    $response = curl_exec($ch);
@@ -631,6 +642,12 @@ class Browshot
               'http_code' => '',
               'last_url' => ''
 	    );
+	    
+	    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$header = substr($response, 0, $header_size);
+		$body = substr($response, $header_size);
+	    $result['body'] = $body;
+	    
 
 	    if ( $error != "" ) {
 	      $result['error'] = $error;
@@ -638,11 +655,19 @@ class Browshot
 
 	      return $result;
 	    }
-
-	    $header_size = curl_getinfo($ch,CURLINFO_HEADER_SIZE);
-	    $result['body'] = $response;
+	    
 	    $result['http_code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
 	    $result['last_url'] = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL);
+	    
+	    if ($result['http_code'] != 200) {
+			try {
+				$json = json_decode($result['body']);
+				$result['error'] = $json->{'error'} || $error;
+			}
+			catch(Exception $e) {
+				$this->error($e);
+			}
+	    }
 
 	    curl_close($ch);
 	    return $result;

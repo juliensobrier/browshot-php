@@ -76,7 +76,7 @@ class ScreenshotAPI extends TestCase
 		$this->assertTrue(array_key_exists('size', 		$screenshot),	"Screenshot size is present");
 		$this->assertTrue(array_key_exists('width', 		$screenshot),	"Screenshot width is present");
 		$this->assertTrue(array_key_exists('height', 		$screenshot),	"Screenshot height is present");
-		$this->assertTrue(array_key_exists('request_time', 	$screenshot),	"Screenshot request_time is present");
+// 		$this->assertTrue(array_key_exists('request_time', 	$screenshot),	"Screenshot request_time is present");
 		$this->assertTrue(array_key_exists('started', 		$screenshot),	"Screenshot started is present");
 		$this->assertTrue(array_key_exists('load', 		$screenshot),	"Screenshot load is present");
 		$this->assertTrue(array_key_exists('content', 		$screenshot),	"Screenshot content is present");
