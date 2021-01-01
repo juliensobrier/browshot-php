@@ -23,7 +23,7 @@
 
 class Browshot
 {
-	const version = '1.16.1';
+	const version = '1.25.1';
 
 	/**
 	 * Constructor
@@ -332,7 +332,7 @@ class Browshot
 	public function screenshot_thumbnail($id = 0, $parameters = array())
 	{
 		if ($id == 0) {
-			$this->error("Missing screenshit id in screenshot_thumbnail");
+			$this->error("Missing screenshot id in screenshot_thumbnail");
 			return $this->generic_error("Missing id in screenshot_thumbnail");
 		}
 
@@ -415,7 +415,7 @@ class Browshot
 	*
 	* See <a href="https://browshot.com/api/documentation#batch_info">https://browshot.com/api/documentation#batch_info</a> for the response format and the list of arguments
 	*
-	* @param int    abtch ID
+	* @param int    batch ID
 	* @param array
 	*
 	* @return array
@@ -577,7 +577,6 @@ class Browshot
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
 	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive"));
-	    //curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
 	    //curl_setopt($ch, CURLOPT_VERBOSE, true);
 
 	    $response = curl_exec($ch);
@@ -620,57 +619,56 @@ class Browshot
 			$data = array('file' => $output);
 		}
 	
-	    $ch = curl_init($url);
-	    curl_setopt($ch, CURLOPT_POST,true);
-	    curl_setopt($ch, CURLOPT_HEADER, true); 
-	    curl_setopt($ch, CURLOPT_TIMEOUT, 250); 
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	    curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
-	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
-	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
-	    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive")); 
-	    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-	    //curl_setopt($ch, CURLOPT_RETURNTRANSFER, FALSE);
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_POST,true);
+		curl_setopt($ch, CURLOPT_HEADER, true); 
+		curl_setopt($ch, CURLOPT_TIMEOUT, 250); 
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive")); 
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
-	    $response = curl_exec($ch);
-	    
-	    $error = curl_error($ch);
-	    $result = array( 
-              'body' => '',
-              'error' => '',
-              'http_code' => '',
-              'last_url' => ''
-	    );
-	    
-	    $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$response = curl_exec($ch);
+		
+		$error = curl_error($ch);
+		$result = array( 
+						'body' => '',
+						'error' => '',
+						'http_code' => '',
+						'last_url' => ''
+		);
+		
+		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 		$header = substr($response, 0, $header_size);
 		$body = substr($response, $header_size);
-	    $result['body'] = $body;
+	  $result['body'] = $body;
 	    
 
-	    if ( $error != "" ) {
-	      $result['error'] = $error;
-	      curl_close($ch);
+		if ( $error != "" ) {
+			$result['error'] = $error;
+			curl_close($ch);
 
-	      return $result;
-	    }
-	    
-	    $result['http_code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
-	    $result['last_url'] = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL);
-	    
-	    if ($result['http_code'] != 200) {
-			try {
-				$json = json_decode($result['body']);
-				$result['error'] = $json->{'error'} || $error;
-			}
-			catch(Exception $e) {
-				$this->error($e);
-			}
-	    }
+			return $result;
+		}
+		
+		$result['http_code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+		$result['last_url'] = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL);
+		
+		if ($result['http_code'] != 200) {
+		try {
+			$json = json_decode($result['body']);
+			$result['error'] = $json->{'error'} || $error;
+		}
+		catch(Exception $e) {
+			$this->error($e);
+		}
+		}
 
-	    curl_close($ch);
-	    return $result;
+		curl_close($ch);
+		return $result;
 	}
 }
 

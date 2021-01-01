@@ -1,8 +1,8 @@
 # Browshot (PHP)
 
-Browshot (http://www.browshot.com/) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc. Browshot has full Flash, JavaScript, CSS, & HTML5 support.
+Browshot (https://www.browshot.com/) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc. Browshot has full Flash, JavaScript, CSS, & HTML5 support.
 
-The latest API version is detailed at http://browshot.com/api/documentation. browshot follows the API documentation very closely: the function names are similar to the URLs used (screenshot/create becomes screenshot_create(), instance/list becomes instance_list(), etc.), the request arguments are exactly the same, etc.
+The latest API version is detailed at https://browshot.com/api/documentation. browshot follows the API documentation very closely: the function names are similar to the URLs used (screenshot/create becomes screenshot_create(), instance/list becomes instance_list(), etc.), the request arguments are exactly the same, etc.
 
 The library version matches closely the API version it handles: Browshot 1.0.0 is the first release for the API 1.0, browshot 1.1.1 is the second release for the API 1.1, etc.
 
@@ -19,7 +19,7 @@ Browshot can handle most the API updates within the same major version, e.g. bro
 ## Use Browshot
 
     git clone https://github.com/juliensobrier/browshot-php
-    include Browshot.php
+    include "src/Browshot.php"
 
 To run the unit tests (and understand how to use Browshot)
 
