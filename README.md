@@ -1,5 +1,7 @@
 # Browshot (PHP)
 
+[![Git](https://app.soluble.cloud/api/v1/public/badges/dffb7a45-60bc-4ccc-99d3-b393457ac792.svg?orgId=234270307752)](https://app.soluble.cloud/repos/details/github.com/juliensobrier/browshot-php?orgId=234270307752)  
+
 Browshot (https://www.browshot.com/) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc. Browshot has full Flash, JavaScript, CSS, & HTML5 support.
 
 The latest API version is detailed at https://browshot.com/api/documentation. browshot follows the API documentation very closely: the function names are similar to the URLs used (screenshot/create becomes screenshot_create(), instance/list becomes instance_list(), etc.), the request arguments are exactly the same, etc.
