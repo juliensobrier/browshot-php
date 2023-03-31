@@ -327,7 +327,7 @@ class Browshot
      * @param int   screenshot ID
      * @param array
      *
-     * @return string Return an empty string if the image could not be retrieved, otherwise return the PNG content.
+     * @return mixed Return an error array if the ID is empty, empty string if the image could not be retrieved, otherwise return the PNG content.
      */
 	public function screenshot_thumbnail($id = 0, $parameters = array())
 	{
@@ -361,9 +361,9 @@ class Browshot
 		* @param string file name
 		* @param array
 		*
-		* @return string Return an empty string if the image could not be retrieved or saved, otherwise return the file name.
+		* @return mixed Return an error array if the ID or file is empty, an empty string if the image could not be retrieved or saved, otherwise return the file name.
 		*/
-	public function screenshot_thumbnail_file($id = 0, $file, $parameters = array())
+	public function screenshot_thumbnail_file($id = 0, $file = '', $parameters = array())
 	{
 		if ($file == '') {
 			$this->error("Missing file in screenshot_thumbnail_file");
@@ -671,5 +671,3 @@ class Browshot
 		return $result;
 	}
 }
-
-?>
