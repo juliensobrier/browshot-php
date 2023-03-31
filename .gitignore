@@ -3,3 +3,4 @@ build.sh
 *.zip
 *~
 samples/
+.DS_Store
