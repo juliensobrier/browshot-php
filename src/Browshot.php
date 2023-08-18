@@ -363,7 +363,7 @@ class Browshot
 		*
 		* @return string Return an empty string if the image could not be retrieved or saved, otherwise return the file name.
 		*/
-	public function screenshot_thumbnail_file($id = 0, $file, $parameters = array())
+	public function screenshot_thumbnail_file($id, $file, $parameters = array())
 	{
 		if ($file == '') {
 			$this->error("Missing file in screenshot_thumbnail_file");
