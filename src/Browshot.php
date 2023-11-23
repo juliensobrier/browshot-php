@@ -15,7 +15,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2015 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.16.1
+ * @version   1.29.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -23,7 +23,7 @@
 
 class Browshot
 {
-	const version = '1.25.1';
+	const version = '1.29.0';
 
 	/**
 	 * Constructor
@@ -389,16 +389,16 @@ class Browshot
 		}
 	}
 
-    /**
-     * Request multiple screenshots from a text file.
-     *
-     * See <a href="https://browshot.com/api/documentation#batch_create">https://browshot.com/api/documentation#batch_create</a> for the response format and the list of arguments
-     *
-     * @param string file name
-     * @param array
-     *
-     * @return array
-     */
+	/**
+	 * Request multiple screenshots from a text file.
+	 *
+	 * See <a href="https://browshot.com/api/documentation#batch_create">https://browshot.com/api/documentation#batch_create</a> for the response format and the list of arguments
+	 *
+	 * @param string file name
+	 * @param array
+	 *
+	 * @return array
+	 */
 	public function batch_create($file = '', $parameters = array())
 	{
 		if ($file == '') {
@@ -426,16 +426,47 @@ class Browshot
 		return $this->return_reply('batch/info', $parameters);
 	}
 
+	/**
+	 * Crawl a domain and screenshot all pages.
+	 *
+	 * See <a href="https://browshot.com/api/documentation#crawl_create">https://browshot.com/api/documentation#crawl_create</a> for the response format and the list of arguments
+	 *
+	 * @param string file name
+	 * @param array
+	 *
+	 * @return array
+	 */
+	public function crawl_create($parameters = array())
+	{
+		return $this->return_reply('crawl/create', $parameters);
+	}
 
-    /**
-     * Return information about the user account.
-     *
-     * See <a href="https://browshot.com/api/documentation#account_info">https://browshot.com/api/documentation#account_info</a> for the response format and the list of arguments
-     *
-     * @param array
-     *
-     * @return array
-     */
+	/**
+	* Get details about screenshots requested.
+	*
+	* See <a href="https://browshot.com/api/documentation#crawl_info">https://browshot.com/api/documentation#crawl_info</a> for the response format and the list of arguments
+	*
+	* @param int    batch ID
+	* @param array
+	*
+	* @return array
+	*/
+	public function crawl_info($id = 0, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->return_reply('crawl/info', $parameters);
+	}
+
+
+	/**
+	 * Return information about the user account.
+	 *
+	 * See <a href="https://browshot.com/api/documentation#account_info">https://browshot.com/api/documentation#account_info</a> for the response format and the list of arguments
+	 *
+	 * @param array
+	 *
+	 * @return array
+	 */
 	public function account_info($parameters = array())
 	{
 		return $this->return_reply('account/info', $parameters);
