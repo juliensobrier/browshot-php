@@ -23,21 +23,14 @@ class ThumbnailAPI extends TestCase
 	public function testThumbnailWrong()
 	{
 		$thumbnail = $this->browshot->screenshot_thumbnail();
-		$this->assertTrue(array_key_exists('error', 	$thumbnail), 	"Thumbnail failed");
+		$this->assertTrue(array_key_exists('error', 	(array)$thumbnail), 	"Thumbnail failed");
 
 	}
 
 	public function testThumbnail()
 	{
-		$screenshots = $this->browshot->screenshot_list();
-		$this->assertGreaterThan(0,  	count(array_keys((array)$screenshots)) );
-
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-
-		$thumbnail = $this->browshot->screenshot_thumbnail($screenshot->{'id'}, array('width' => 320));
+		$screenshot_id = $this->fixtureId('BROWSHOT_SCREENSHOT_ID');
+		$thumbnail = $this->browshot->screenshot_thumbnail($screenshot_id, array('width' => 320));
 		$this->assertFalse($thumbnail == '', "Thumbnail succeeded");
 		$this->assertEquals(substr($thumbnail, 1, 3), 'PNG', "Thumbnail is a valid PNG file");
 	}

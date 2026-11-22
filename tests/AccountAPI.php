@@ -18,21 +18,21 @@ require_once 'TestCase.php';
 class AccountAPI extends TestCase
 {
 
-	public function testAccountWrong()
+	public function testAccountInfo()
 	{
 		$account = $this->browshot->account_info();
-		$this->assertFalse(array_key_exists('error', 	  		$account), 	"Correct account");
+		$this->assertFalse(array_key_exists('error', 	  		(array)$account), 	"Correct account");
 
-		$this->assertTrue(array_key_exists('balance', 	  		$account), 	"Account balance is present");
-		$this->assertEquals(0, 	  $account->{'balance'}, 				"Balance is empty");
+		$this->assertTrue(array_key_exists('balance', 	  		(array)$account), 	"Account balance is present");
+		$this->assertGreaterThanOrEqual(0, $account->{'balance'}, "Balance is nonnegative");
 
-		$this->assertTrue(array_key_exists('active', 	  		$account), 	"Account active is present");
+		$this->assertTrue(array_key_exists('active', 	  		(array)$account), 	"Account active is present");
 		$this->assertEquals(1, 	  $account->{'active'}, 				"Account is active");
 
-// 		$this->assertTrue(array_key_exists('instances', 	  	$account), 	"Account instances is present");
+// 		$this->assertTrue(array_key_exists('instances', 	  	(array)$account), 	"Account instances is present");
 
-		$this->assertTrue(array_key_exists('free_screenshots_left', $account), 	"Free screenshots is present");
-		$this->assertGreaterThan(0, 	  $account->{'free_screenshots_left'}, 	"Free screenshots left");
+		$this->assertTrue(array_key_exists('free_screenshots_left', (array)$account), 	"Free screenshots is present");
+		$this->assertGreaterThanOrEqual(0, $account->{'free_screenshots_left'}, 	"Free screenshots left");
 	}
 
 

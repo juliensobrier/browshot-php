@@ -18,280 +18,151 @@ require_once 'TestCase.php';
  */
 class ScreenshotAPI extends TestCase
 {
-// 	screenshot is not actually created for test account, so the reply may not match our parameters
-
 	public function testScreenshotCreateWrong()
 	{
 		$screenshot = $this->browshot->screenshot_create();
-		$this->assertTrue(array_key_exists('error', 	$screenshot), 	"Screenshot failed");
+		$this->assertArrayHasKey('error', (array)$screenshot);
 
-		$screenshot = $this->browshot->screenshot_create(array('url' => '-'));
-		$this->assertTrue(array_key_exists('error', 	$screenshot), 	"Screenshot failed");
+		$screenshot = $this->browshot->screenshot_create(array('url' => 'http://'));
+		$this->assertArrayHasKey('error', (array)$screenshot);
 	}
 
 	public function testScreenshotCreate()
 	{
-		$screenshot = $this->browshot->screenshot_create(array('url' => 'http://browshot.com/'));
-		$this->assertFalse(array_key_exists('error', 	$screenshot));
-
-		$this->assertTrue(array_key_exists('id', 	$screenshot), 	"Screenshot ID is present");
-		$this->assertTrue(array_key_exists('status', 	$screenshot),	"Screenshot status is present");
-		$this->assertTrue(array_key_exists('priority', 	$screenshot),	"Screenshot priority is present");
-
-		if ($screenshot->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',	$screenshot),	"Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('url', 		$screenshot),	"Screenshot url is present");
-			$this->assertTrue(array_key_exists('size', 		$screenshot),	"Screenshot size is present");
-			$this->assertTrue(array_key_exists('width', 		$screenshot),	"Screenshot width is present");
-			$this->assertTrue(array_key_exists('height', 		$screenshot),	"Screenshot height is present");
-			$this->assertTrue(array_key_exists('request_time', 	$screenshot),	"Screenshot request_time is present");
-			$this->assertTrue(array_key_exists('started', 		$screenshot),	"Screenshot started is present");
-			$this->assertTrue(array_key_exists('load', 		$screenshot),	"Screenshot load is present");
-			$this->assertTrue(array_key_exists('content', 		$screenshot),	"Screenshot content is present");
-			$this->assertTrue(array_key_exists('finished', 		$screenshot),	"Screenshot finished is present");
-			$this->assertTrue(array_key_exists('instance_id', 	$screenshot),	"Screenshot instance_id is present");
-			$this->assertTrue(array_key_exists('response_code', 	$screenshot),	"Screenshot response_code is present");
-			$this->assertTrue(array_key_exists('final_url', 	$screenshot),	"Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('content_type', 	$screenshot),	"Screenshot content_type is present");
-			$this->assertTrue(array_key_exists('scale', 		$screenshot),	"Screenshot scale is present");
-			$this->assertTrue(array_key_exists('cost', 		$screenshot),	"Screenshot cost is present");
+		$screenshot = $this->browshot->screenshot_create(array(
+			'url' => 'https://browshot.com/',
+			'instance_id' => 12,
+			'details' => 2,
+			'cache' => 86400
+		));
+		$this->assertFields($screenshot, array('id', 'status', 'priority', 'url', 'size', 'instance_id'));
+		$this->assertContains($screenshot->status, array('in_queue', 'in_process', 'finished'));
+		$this->assertEmpty($screenshot->error ?? '');
+		if ($screenshot->status === 'finished') {
+			$this->assertFields($screenshot, array('screenshot_url', 'width', 'height', 'request_time',
+				'started', 'load', 'content', 'finished', 'response_code', 'final_url', 'content_type', 'scale'));
+			$this->assertNotEmpty($screenshot->screenshot_url);
 		}
 	}
 
 	public function testScreenshotListDetails()
 	{
-		$screenshots = $this->browshot->screenshot_list();
-		$this->assertGreaterThan(0,  	count(array_keys((array)$screenshots)) );
-
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-		$this->assertGreaterThan(0, 				$screenshot_id, "Screenshot ID is correct");
-		$this->assertTrue(array_key_exists('id', 		$screenshot),	"Screenshot ID is present");
-		$this->assertTrue(array_key_exists('status', 		$screenshot),	"Screenshot status is present");
-		$this->assertTrue(array_key_exists('priority', 		$screenshot),	"Screenshot priority is present");
-		$this->assertTrue(array_key_exists('screenshot_url',	$screenshot),	"Screenshot screenshot_url is present");
-		$this->assertTrue(array_key_exists('url', 		$screenshot),	"Screenshot url is present");
-		$this->assertTrue(array_key_exists('size', 		$screenshot),	"Screenshot size is present");
-		$this->assertTrue(array_key_exists('width', 		$screenshot),	"Screenshot width is present");
-		$this->assertTrue(array_key_exists('height', 		$screenshot),	"Screenshot height is present");
-// 		$this->assertTrue(array_key_exists('request_time', 	$screenshot),	"Screenshot request_time is present");
-		$this->assertTrue(array_key_exists('started', 		$screenshot),	"Screenshot started is present");
-		$this->assertTrue(array_key_exists('load', 		$screenshot),	"Screenshot load is present");
-		$this->assertTrue(array_key_exists('content', 		$screenshot),	"Screenshot content is present");
-		$this->assertTrue(array_key_exists('finished', 		$screenshot),	"Screenshot finished is present");
-		$this->assertTrue(array_key_exists('instance_id', 	$screenshot),	"Screenshot instance_id is present");
-		$this->assertTrue(array_key_exists('final_url', 	$screenshot),	"Screenshot final_url is present");
-		$this->assertTrue(array_key_exists('response_code', 	$screenshot),	"Screenshot response_code is NOT present");
-		$this->assertTrue(array_key_exists('content_type', 	$screenshot),	"Screenshot content_type is NOT present");
-		$this->assertTrue(array_key_exists('scale', 		$screenshot),	"Screenshot scale is present");
-		$this->assertTrue(array_key_exists('cost', 		$screenshot),		"Screenshot cost is present");
-
-		$this->assertFalse(array_key_exists('images', 		$screenshot),	"Screenshot images are NOT present");
-		$this->assertFalse(array_key_exists('scripts', 		$screenshot),	"Screenshot scripts are NOT present");
+		$screenshot = $this->firstScreenshot($this->browshot->screenshot_list(array('details' => 2)));
+		$this->assertFields($screenshot, array('id', 'status', 'priority', 'screenshot_url', 'url', 'size',
+			'width', 'height', 'started', 'load', 'content', 'finished', 'instance_id', 'final_url',
+			'response_code', 'content_type', 'scale'));
+		$this->assertNoFields($screenshot, array('images', 'scripts'));
 	}
 
 	public function testScreenshotListDetails0()
 	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$this->assertGreaterThan(0,  	count(array_keys((array)$screenshots)) );
-
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-// 		var_dump($screenshot);
-		$this->assertGreaterThan(0, 						$screenshot_id, "Screenshot ID is correct");
-		$this->assertTrue(array_key_exists('id', 			$screenshot),	"Screenshot ID is present");
-		$this->assertTrue(array_key_exists('final_url', 	$screenshot),	"Screenshot final_url is present");
-
-		$this->assertFalse(array_key_exists('response_code', $screenshot),	"Screenshot response_code is NOT present");
-		$this->assertFalse(array_key_exists('content_type', $screenshot),	"Screenshot content_type is NOT present");
-		$this->assertFalse(array_key_exists('finished', 	$screenshot),	"Screenshot finished is NOT present");
-		$this->assertFalse(array_key_exists('images', 		$screenshot),	"Screenshot images are NOT present");
+		$screenshot = $this->firstScreenshot($this->browshot->screenshot_list(array('details' => 0)));
+		$this->assertFields($screenshot, array('id', 'status', 'screenshot_url', 'url', 'size'));
+		$this->assertNoFields($screenshot, array('final_url', 'response_code', 'content_type', 'finished', 'images'));
 	}
 
 	public function testScreenshotInfoWrong()
 	{
 		$screenshot = $this->browshot->screenshot_info();
-		$this->assertTrue(array_key_exists('error', 	$screenshot), 	"Screenshot ID is missing");
+		$this->assertArrayHasKey('error', (array)$screenshot);
 	}
 
 	public function testScreenshotInfo()
 	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-		$info = $this->browshot->screenshot_info($screenshot_id);
-		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
-
-		$this->assertTrue(array_key_exists('id', 		$info), 		"Screenshot ID is present");
-		$this->assertTrue(array_key_exists('status', 	$info), 		"Screenshot status is present");
-		$this->assertTrue(array_key_exists('priority', 	$info), 		"Screenshot priority is present");
-
-		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',$info), "Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('url', 			$info), "Screenshot url is present");
-			$this->assertTrue(array_key_exists('size', 			$info), "Screenshot size is present");
-			$this->assertTrue(array_key_exists('width', 		$info), "Screenshot width is present");
-			$this->assertTrue(array_key_exists('height', 		$info), "Screenshot height is present");
-			$this->assertTrue(array_key_exists('request_time', 	$info), "Screenshot request_time is present");
-			$this->assertTrue(array_key_exists('started', 		$info), "Screenshot started is present");
-			$this->assertTrue(array_key_exists('load', 			$info), "Screenshot load is present");
-			$this->assertTrue(array_key_exists('content', 		$info), "Screenshot content is present");
-			$this->assertTrue(array_key_exists('finished', 		$info), "Screenshot finished is present");
-			$this->assertTrue(array_key_exists('instance_id', 	$info), "Screenshot instance_id is present");
-			$this->assertTrue(array_key_exists('response_code', $info), "Screenshot response_code is present");
-			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
-			$this->assertTrue(array_key_exists('scale', 		$info), "Screenshot scale is present");
-			$this->assertTrue(array_key_exists('cost', 			$info), "Screenshot cost is present");
-		
-			$this->assertFalse(array_key_exists('images', 		$info), "Screenshot images are NOT present");
-		}
+		$id = $this->fixtureId('BROWSHOT_SCREENSHOT_ID');
+		$info = $this->browshot->screenshot_info($id);
+		$this->assertFields($info, array('id', 'status', 'priority', 'url', 'size', 'instance_id'));
+		$this->assertSame($id, (string)$info->id);
+		$this->assertSame('finished', $info->status);
+		$this->assertEmpty($info->error ?? '');
 	}
 
 	public function testScreenshotInfoDetails0()
 	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 0));
-		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
-
-		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',	$info), "Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-
-			$this->assertFalse(array_key_exists('response_code', 	$info), "Screenshot response_code is NOT present");
-			$this->assertFalse(array_key_exists('content_type', 	$info), "Screenshot content_type is NOT present");
-			$this->assertFalse(array_key_exists('finished', 	$info), "Screenshot finished is NOT present");
-			$this->assertFalse(array_key_exists('images', 		$info), "Screenshot images are NOT present");
-		}
+		$info = $this->finishedFixtureInfo(0);
+		$this->assertFields($info, array('screenshot_url'));
+		$this->assertNoFields($info, array('final_url', 'response_code', 'content_type', 'finished', 'images'));
 	}
 
 	public function testScreenshotInfoDetails1()
 	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 1));
-		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
-
-		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',	$info), "Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('response_code', 	$info), "Screenshot response_code is present");
-			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
-
-			$this->assertFalse(array_key_exists('started', 		$info), "Screenshot started is NOT present");
-			$this->assertFalse(array_key_exists('finished', 	$info), "Screenshot finished is NOT present");
-			$this->assertFalse(array_key_exists('images', 		$info), "Screenshot images are NOT present");
-			$this->assertFalse(array_key_exists('iframes', 		$info), "Screenshot iframes are NOT present");
-		}
+		$info = $this->finishedFixtureInfo(1);
+		$this->assertFields($info, array('screenshot_url', 'final_url', 'response_code', 'content_type'));
+		$this->assertNoFields($info, array('started', 'finished', 'images', 'iframes'));
 	}
 
 	public function testScreenshotInfoDetails2()
 	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-		$screenshot = $screenshots->{$screenshot_id};
-
-		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 2));
-		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
-
-		if ($info->{'status'} == 'finished') {
-			$this->assertTrue(array_key_exists('screenshot_url',$info), "Screenshot screenshot_url is present");
-			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-			$this->assertTrue(array_key_exists('response_code', $info), "Screenshot response_code is present");
-			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
-			$this->assertTrue(array_key_exists('started', 		$info), "Screenshot started is present");
-			$this->assertTrue(array_key_exists('finished', 		$info), "Screenshot finished is present");
-
-			$this->assertFalse(array_key_exists('images', 		$info), "Screenshot images are NOT present");
-			$this->assertFalse(array_key_exists('iframes', 		$info), "Screenshot iframes are NOT present");
-		}
+		$info = $this->finishedFixtureInfo(2);
+		$this->assertFields($info, array('screenshot_url', 'final_url', 'response_code', 'content_type',
+			'started', 'finished', 'load', 'content', 'request_time', 'scale', 'width', 'height'));
+		$this->assertNoFields($info, array('images', 'iframes'));
 	}
-
-//	Details = 2 by default
-// 	public function testScreenshotInfoDetails3()
-// 	{
-// 		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-// 		$screenshot_ids = array_keys((array)$screenshots);
-// 		$screenshot_id = $screenshot_ids[0];
-// 		$screenshot = $screenshots->{$screenshot_id};
-// 
-// 		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 3));
-// 		$this->assertFalse(array_key_exists('error', 	$info), 	"Screenshot ID is correct");
-// 
-// 		if ($info->{'status'} == 'finished') {
-// 			$this->assertTrue(array_key_exists('screenshot_url',	$info), "Screenshot screenshot_url is present");
-// 			$this->assertTrue(array_key_exists('final_url', 	$info), "Screenshot final_url is present");
-// 			$this->assertTrue(array_key_exists('response_code', 	$info), "Screenshot response_code is present");
-// 			$this->assertTrue(array_key_exists('content_type', 	$info), "Screenshot content_type is present");
-// 			$this->assertTrue(array_key_exists('started', 		$info), "Screenshot started is present");
-// 			$this->assertTrue(array_key_exists('finished', 		$info), "Screenshot finished is present");
-// 
-// 			$this->assertTrue(array_key_exists('images', 		$info), "Screenshot images are present");
-// 			$this->assertTrue(array_key_exists('iframes', 		$info), "Screenshot iframes are present");
-// 			$this->assertTrue(array_key_exists('scripts', 		$info), "Screenshot scripts are present");
-// 		}
-// 	}
 
 	public function testScreenshotHost()
 	{
-		$screenshots = $this->browshot->screenshot_list(array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-
-		$hosting = $this->browshot->screenshot_host($screenshot_id);
-		$this->assertEquals("error", $hosting->{'status'}, "Default hosting option not enabled for this account");
-
-		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 'browshot'));
-		$this->assertEquals("error", $hosting->{'status'}, "Browshot hosting option not enabled for this account");
-
-		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 's3'));
-		$this->assertEquals("error", $hosting->{'status'}, "S3 hosting option not enabled for this account");
-
-		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 's3', 'bucket' => 'mine'));
-		$this->assertEquals("error", $hosting->{'status'}, "S3 hosting option not enabled for this account");
-
-		$hosting = $this->browshot->screenshot_host($screenshot_id,  array('hosting' => 'cdn'));
-		$this->assertEquals("error", $hosting->{'status'}, "CDN hosting option not enabled for this account");
+		$screenshot_id = $this->fixtureId('BROWSHOT_HOST_ID');
+		foreach (array(array(), array('hosting' => 'browshot'), array('hosting' => 's3'),
+			array('hosting' => 's3', 'bucket' => 'mine'), array('hosting' => 'cdn')) as $parameters) {
+			$hosting = $this->browshot->screenshot_host($screenshot_id, $parameters);
+			$this->assertTrue((is_array($hosting) && isset($hosting['error'])) || (is_object($hosting) && $hosting->{'status'} === 'error'));
+		}
 	}
 
 	public function testScreenshotShare()
 	{
 		$share = $this->browshot->screenshot_share(0);
-		$this->assertEquals("error", $share->{'status'}, "Wrong screenshot ID");
+		$this->assertArrayHasKey('error', (array)$share, "Wrong screenshot ID");
 	}
 
 	public function testScreenshotSearch()
 	{
-		$screenshots = $this->browshot->screenshot_search('google.com',   array('details' => 0));
-		$screenshot_ids = array_keys((array)$screenshots);
-		$screenshot_id = $screenshot_ids[0];
-
-		$info = $this->browshot->screenshot_info($screenshot_id, array('details' => 2));
-		$this->assertTrue(array_key_exists('final_url', 	$info), 	"Screenshot final_url is correct");
-		$this->assertTrue(array_key_exists('response_code', 	$info), 	"Screenshot response_code is correct");
-		$this->assertTrue(array_key_exists('final_url', 	$info), 	"Screenshot content_type is correct");
+		$fixture = $this->finishedFixtureInfo(2);
+		$matches = (array)$this->browshot->screenshot_search($fixture->url);
+		$this->assertArrayHasKey($fixture->id, $matches);
+		$this->assertFields($matches[$fixture->id], array('final_url', 'response_code', 'content_type'));
 	}
 
 	public function testScreenshotMultiple()
 	{
-		$this->browshot->_debug = 1;
 		$screenshots = $this->browshot->screenshot_multiple(array('http://mobilito.net/', 'http://browshot.com/'), array(12, 27));
 		$this->assertEquals(4, count($screenshots), "Wrong number of screenshots");
 	}
+	private function finishedFixtureInfo($details)
+	{
+		$id = $this->fixtureId('BROWSHOT_SCREENSHOT_ID');
+		$info = $this->browshot->screenshot_info($id, array('details' => $details));
+		$this->assertFields($info, array('id', 'status'));
+		$this->assertSame($id, (string)$info->id);
+		$this->assertSame('finished', $info->status);
+
+		return $info;
+	}
+
+	private function firstScreenshot($screenshots)
+	{
+		$results = (array)$screenshots;
+		$this->assertNotEmpty($results);
+		$this->assertGreaterThan(0, (int)key($results));
+
+		return reset($results);
+	}
+
+	private function assertFields($data, $fields)
+	{
+		$this->assertIsObject($data);
+		foreach ($fields as $field) {
+			$this->assertArrayHasKey($field, (array)$data);
+		}
+	}
+
+	private function assertNoFields($data, $fields)
+	{
+		foreach ($fields as $field) {
+			$this->assertArrayNotHasKey($field, (array)$data);
+		}
+	}
+
 }
 
 ?>

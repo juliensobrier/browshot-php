@@ -31,17 +31,16 @@ class BrowserAPI extends TestCase
 
 		//var_dump($browser);
 		$this->assertGreaterThan(0, $browser_ids[0],	"Browser ID is correct");
-		$this->assertTrue(array_key_exists('name', 		  $browser), "Browser name exists");
-		$this->assertTrue(array_key_exists('user_agent',  $browser), "Browser user_agent exists");
-		$this->assertTrue(array_key_exists('appname', 	  $browser), "Browser appname exists");
-		$this->assertTrue(array_key_exists('vendorsub',   $browser), "Browser vendorsub exists");
-		$this->assertTrue(array_key_exists('appcodename', $browser), "Browser appcodename exists");
-		$this->assertTrue(array_key_exists('platform', 	  $browser), "Browser platform exists");
-		$this->assertTrue(array_key_exists('vendor', 	  $browser), "Browser vendor exists");
-		$this->assertTrue(array_key_exists('appversion',  $browser), "Browser appversion exists");
-		$this->assertTrue(array_key_exists('javascript',  $browser), "Browser javascript exists");
-		$this->assertTrue(array_key_exists('mobile', 	  $browser), "Browser mobile exists");
-		$this->assertTrue(array_key_exists('flash', 	  $browser), "Browser flash exists");
+		$this->assertTrue(array_key_exists('name', 		  (array)$browser), "Browser name exists");
+		$this->assertTrue(array_key_exists('user_agent',  (array)$browser), "Browser user_agent exists");
+		$this->assertTrue(array_key_exists('appname', 	  (array)$browser), "Browser appname exists");
+		$this->assertTrue(array_key_exists('vendorsub',   (array)$browser), "Browser vendorsub exists");
+		$this->assertTrue(array_key_exists('appcodename', (array)$browser), "Browser appcodename exists");
+		$this->assertTrue(array_key_exists('platform', 	  (array)$browser), "Browser platform exists");
+		$this->assertTrue(array_key_exists('vendor', 	  (array)$browser), "Browser vendor exists");
+		$this->assertTrue(array_key_exists('appversion',  (array)$browser), "Browser appversion exists");
+		$this->assertTrue(array_key_exists('javascript',  (array)$browser), "Browser javascript exists");
+		$this->assertTrue(array_key_exists('mobile', 	  (array)$browser), "Browser mobile exists");
 	}
 
 	public function testBrowserInfo()
@@ -55,17 +54,16 @@ class BrowserAPI extends TestCase
 		$browser = $this->browshot->browser_info($browser_id);
 
 		//var_dump($browser);
-		$this->assertTrue(array_key_exists('name', 		  $browser), "Browser name exists");
-		$this->assertTrue(array_key_exists('user_agent',  $browser), "Browser user_agent exists");
-		$this->assertTrue(array_key_exists('appname', 	  $browser), "Browser appname exists");
-		$this->assertTrue(array_key_exists('vendorsub',   $browser), "Browser vendorsub exists");
-		$this->assertTrue(array_key_exists('appcodename', $browser), "Browser appcodename exists");
-		$this->assertTrue(array_key_exists('platform', 	  $browser), "Browser platform exists");
-		$this->assertTrue(array_key_exists('vendor', 	  $browser), "Browser vendor exists");
-		$this->assertTrue(array_key_exists('appversion',  $browser), "Browser appversion exists");
-		$this->assertTrue(array_key_exists('javascript',  $browser), "Browser javascript exists");
-		$this->assertTrue(array_key_exists('mobile', 	  $browser), "Browser mobile exists");
-		$this->assertTrue(array_key_exists('flash', 	  $browser), "Browser flash exists");
+		$this->assertTrue(array_key_exists('name', 		  (array)$browser), "Browser name exists");
+		$this->assertTrue(array_key_exists('user_agent',  (array)$browser), "Browser user_agent exists");
+		$this->assertTrue(array_key_exists('appname', 	  (array)$browser), "Browser appname exists");
+		$this->assertTrue(array_key_exists('vendorsub',   (array)$browser), "Browser vendorsub exists");
+		$this->assertTrue(array_key_exists('appcodename', (array)$browser), "Browser appcodename exists");
+		$this->assertTrue(array_key_exists('platform', 	  (array)$browser), "Browser platform exists");
+		$this->assertTrue(array_key_exists('vendor', 	  (array)$browser), "Browser vendor exists");
+		$this->assertTrue(array_key_exists('appversion',  (array)$browser), "Browser appversion exists");
+		$this->assertTrue(array_key_exists('javascript',  (array)$browser), "Browser javascript exists");
+		$this->assertTrue(array_key_exists('mobile', 	  (array)$browser), "Browser mobile exists");
 	}
 }
 

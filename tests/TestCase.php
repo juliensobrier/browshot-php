@@ -1,58 +1,33 @@
 <?php
 
-/**
- * PHPUnit3 framework
- */
-require_once 'PHPUnit/Autoload.php';
+require_once dirname(__FILE__) . '/../src/Browshot.php';
+require_once dirname(__FILE__) . '/config.php';
 
 /**
- * Browshot class to test
+ * Base class for testing Browshot.
  */
-require_once dirname(__FILE__).'/../src/Browshot.php';
-
-
-/**
- * Base class for testing Browshot
- *
- */
-abstract class TestCase extends PHPUnit_Framework_TestCase
+abstract class TestCase extends PHPUnit\Framework\TestCase
 {
+	protected $browshot = null;
+	protected $requiresApiKey = true;
 
-    /**
-     * @var Browshot
-     */
-    protected $browshot = null;
+	protected function setUp(): void
+	{
+		$config = $GLOBALS['Browshot_Unittest_Config'];
+		if ($this->requiresApiKey && !$config['key']) {
+			$this->markTestSkipped('Set BROWSHOT_API_KEY to run live tests.');
+		}
 
-	public function __construct($name = null)
-    {
-        parent::__construct($name);
+		$this->browshot = new Browshot($config['key'] ?: 'test-key', $config['debug'], $config['base']);
+	}
 
-        if (!file_exists(dirname(__FILE__).'/config.php')) {
-            throw new Exception('Unit test configuration file is missing. ' .
-                'Please read the documentation in TestCase.php and create ' .
-                'a configuration file. See the example configuration provided '.
-                'in config.php.dist for an example.');
-        }
+	protected function fixtureId($variable)
+	{
+		$id = getenv($variable);
+		if (!$id || !preg_match('/\A[1-9][0-9]{0,18}\z/', $id)) {
+			$this->markTestSkipped('Set ' . $variable . ' to an owned test capture ID.');
+		}
 
-        include_once dirname(__FILE__).'/config.php';
-
-        $this->config = $GLOBALS['Browshot_Unittest_Config'];
-    }
-
-
-	public function setUp()
-    {
-        $this->_old_error_level = error_reporting(E_ALL | E_STRICT);
-        $this->browshot = new Browshot($this->config['key'], $this->config['debug'], $this->config['base']);
-    }
-
-
-    public function tearDown()
-    {
-        unset($this->browshot);
-        error_reporting($this->_old_error_level);
-    }
-
+		return $id;
+	}
 }
-
-?>

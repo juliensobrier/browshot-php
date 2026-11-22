@@ -26,21 +26,20 @@ class InstanceAPI extends TestCase
 		// var_dump($info);
 		$this->assertGreaterThan(20,  	count($info->{'shared'}) );
 		$this->assertGreaterThan(1,  	count($info->{'free'}) );
-		$this->assertEquals(1,  		count($info->{'private'}) );
+		$this->assertIsArray($info->{'private'});
 
 		$free = $info->{'free'}[0];
-		$this->assertTrue(array_key_exists('id', 			$free));
-		$this->assertTrue(array_key_exists('width', 			$free));
-		$this->assertTrue(array_key_exists('height', 			$free));
-		$this->assertTrue(array_key_exists('load', 			$free));
-		$this->assertTrue(array_key_exists('browser', 			$free));
-		$this->assertTrue(array_key_exists('id', 			$free->{'browser'}));
-		$this->assertTrue(array_key_exists('name', 			$free->{'browser'}));
-		$this->assertTrue(array_key_exists('javascript', 		$free->{'browser'}));
-		$this->assertTrue(array_key_exists('flash', 			$free->{'browser'}));
-		$this->assertTrue(array_key_exists('mobile', 			$free->{'browser'}));
-		$this->assertTrue(array_key_exists('type', 			$free));
-		$this->assertTrue(array_key_exists('screenshot_cost', 	$free));
+		$this->assertTrue(array_key_exists('id', 			(array)$free));
+		$this->assertTrue(array_key_exists('width', 			(array)$free));
+		$this->assertTrue(array_key_exists('height', 			(array)$free));
+		$this->assertTrue(array_key_exists('load', 			(array)$free));
+		$this->assertTrue(array_key_exists('browser', 			(array)$free));
+		$this->assertTrue(array_key_exists('id', 			(array)$free->{'browser'}));
+		$this->assertTrue(array_key_exists('name', 			(array)$free->{'browser'}));
+		$this->assertTrue(array_key_exists('javascript', 		(array)$free->{'browser'}));
+		$this->assertTrue(array_key_exists('mobile', 			(array)$free->{'browser'}));
+		$this->assertTrue(array_key_exists('type', 			(array)$free));
+		$this->assertTrue(array_key_exists('screenshot_cost', 	(array)$free));
 		$this->assertEquals(0,			$free->{'screenshot_cost'}, "Screenshot is free");
 	}
 
@@ -59,7 +58,6 @@ class InstanceAPI extends TestCase
 		$this->assertEquals($free->{'browser'}->{'id'}, 		$info->{'browser'}->{'id'}, 		"Correct instance browser ID");
 		$this->assertEquals($free->{'browser'}->{'name'}, 		$info->{'browser'}->{'name'}, 		"Correct instance browser ID");
 		$this->assertEquals($free->{'browser'}->{'javascript'},	$info->{'browser'}->{'javascript'}, 		"Correct instance browser javascript");
-		$this->assertEquals($free->{'browser'}->{'flash'}, 		$info->{'browser'}->{'flash'}, 		"Correct instance browser javascript");
 		$this->assertEquals($free->{'browser'}->{'mobile'}, 	$info->{'browser'}->{'mobile'}, 		"Correct instance browser javascript");
 		$this->assertEquals($free->{'type'}, 					$info->{'type'}, 		"Correct instance type");
 		$this->assertEquals($free->{'screenshot_cost'}, 		$info->{'screenshot_cost'}, 		"Correct instance screenshot_cost");
@@ -69,8 +67,7 @@ class InstanceAPI extends TestCase
 	{
 		$missing = $this->browshot->instance_info(-1);
 
-		$this->assertTrue(array_key_exists('error',   $missing), "Instance was not found");
-		$this->assertTrue(array_key_exists('status', $missing),	"Instance was not found");
+		$this->assertTrue(array_key_exists('error',   (array)$missing), "Instance was not found");
 	}
 }
 

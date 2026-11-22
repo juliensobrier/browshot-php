@@ -21,7 +21,7 @@ class SimpleAPI extends TestCase
 
 	public function testSimpleCreate()
 	{
-		$info = $this->browshot->simple(array('url' => 'http://mobilito.net/', 'cache' => 60 * 60 * 24 * 365)); # cached for a year
+		$info = $this->browshot->simple(array('url' => 'https://browshot.com/', 'instance_id' => 12, 'cache' => 60 * 60 * 24 * 365)); # cached for a year
 
 		$this->assertEquals("200", $info['code']);
 		$this->assertGreaterThan(100,  strlen($info['image']) );
@@ -30,12 +30,17 @@ class SimpleAPI extends TestCase
 
 	public function testSimpleFile()
 	{
-		$info = $this->browshot->simple_file('mobilito.png', array('url' => 'http://mobilito.net/', 'cache' => 60 * 60 * 24 * 365)); # cached for a year
-
-		$this->assertEquals("200", $info['code']);
-		$this->assertEquals("mobilito.png", $info['file']);
-		$this->assertTrue( file_exists($info['file']) );
-		unlink($info['file']);
+		$file = tempnam(sys_get_temp_dir(), 'browshot-');
+		try {
+			$info = $this->browshot->simple_file($file, array(
+				'url' => 'https://browshot.com/', 'instance_id' => 12, 'cache' => 60 * 60 * 24 * 365
+			));
+			$this->assertEquals("200", $info['code']);
+			$this->assertSame($file, $info['file']);
+			$this->assertGreaterThan(100, filesize($file));
+		} finally {
+			unlink($file);
+		}
 	}
 
 }
