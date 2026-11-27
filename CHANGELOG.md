@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0
+
+- Select API v1 for legacy options and API v2 for shared endpoints and new capture options.
+- Support v2 synchronous captures, device discovery, and app management.
+
 ## 1.32.0
 
 - Add `screenshot_pdf` and `screenshot_pdf_file` for PDF downloads.

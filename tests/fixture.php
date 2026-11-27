@@ -7,10 +7,31 @@ if ($path === '/health') {
 	return;
 }
 
+if (strpos($path, '/api/v2/') === 0 && isset($_GET['offline'])) {
+	http_response_code(404);
+	header('Content-Type: application/json');
+	echo '{"success":false,"error":"NOT_FOUND","message":"Page not found"}';
+	return;
+}
+if ($path === '/api/v2/simple') {
+	header('Location: /api/v2/wait', true, 302);
+	return;
+}
+if ($path === '/api/v2/wait') {
+	header('Location: simple/123', true, 302);
+	return;
+}
+if ($path === '/api/v2/simple/123') {
+	header('Content-Type: image/png');
+	echo "\x89PNG\r\n\x1a\n\xff";
+	return;
+}
+
 if ($path !== '/api/v1/screenshot/pdf' && $path !== '/api/v1/screenshot/video') {
 	header('Content-Type: application/json');
 	echo json_encode(array(
 		'method' => $_SERVER['REQUEST_METHOD'],
+		'json' => json_decode(file_get_contents('php://input')),
 		'path' => $path,
 		'query' => $_GET,
 		'rawQuery' => $_SERVER['QUERY_STRING'],

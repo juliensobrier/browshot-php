@@ -15,7 +15,7 @@
  * @author    Julien Sobrier <julien@sobrier.net>
  * @copyright 2015 Julien Sobrier, Browshot
  * @license   http://www.opensource.org/licenses/mit-license.html MIT License
- * @version   1.32.0
+ * @version   2.0.0
  * @link      http://browshot.com/
  * @link      http://browshot.com/api/documentation
  * @link      https://github.com/juliensobrier/browshot-php
@@ -23,11 +23,12 @@
 
 class Browshot
 {
-	const version = '1.32.0';
+	const version = '2.0.0';
 
 	public $_key;
 	public $_base;
 	public $_debug;
+	private $auto_api;
 
 	/**
 	 * Constructor
@@ -37,10 +38,11 @@ class Browshot
 	 * @param  int    Set to 1 to print debug output to the standard output. 0 (disabled) by default.
 	 * @param  string Optional. Base URL for all API requests. You should use the default base provided by the library. Be careful if you decide to use HTTP instead of HTTPS as your API key could be sniffed and your account could be used without your consent.
 	 */	
-	public function __construct($key, $debug = 0, $base = 'https://api.browshot.com/api/v1/')
+	public function __construct($key, $debug = 0, $base = null)
 	{
 		$this->_key = $key;
-		$this->_base = $base;
+		$this->auto_api = $base === null;
+		$this->_base = $this->auto_api ? 'https://api.browshot.com/api/v2/' : $base;
 		$this->_debug = $debug;
 
 
@@ -71,8 +73,7 @@ class Browshot
 	*/
 	public function simple($parameters)
 	{
-		$url = $this->make_url('simple', $parameters);
-		$res = $this->http_get($url);
+		$res = $this->request('simple', $parameters);
 
 		return array('code' => $res['http_code'], 'image' => $res['body'], 'error' => $res['error']);
 	}
@@ -172,7 +173,11 @@ class Browshot
 	*/
 	public function browser_info($id = 0, $parameters = array())
 	{
- 		$parameters['id'] = $id;
+		if ($id === 'chrome' || $id === 'firefox') {
+			$parameters['browser'] = $id;
+		} elseif ($id || !isset($parameters['browser'])) {
+			$parameters['id'] = $id;
+		}
 		return $this->return_reply('browser/info', $parameters);
 	}
 
@@ -392,8 +397,7 @@ class Browshot
 		}
 
 		$parameters['id'] = $id;
-		$url = $this->make_url('screenshot/thumbnail', $parameters);
-		$res = $this->http_get($url);
+		$res = $this->request('screenshot/thumbnail', $parameters);
 
 		if ($res['error'] == '' && $res['http_code'] == "200")
 		{
@@ -534,9 +538,7 @@ class Browshot
 		$file = $parameters['file'];
 		unset($parameters['file']);
 
-		$url = $this->make_url($action, $parameters);
-
-		$res = $this->http_post($url, $file);
+		$res = $this->request($action, $parameters, $file);
 
 		if ($res['http_code'] != "200")
 		{
@@ -554,7 +556,7 @@ class Browshot
 		}
 
 		$parameters['id'] = $id;
-		$res = $this->http_get($this->make_url($action, $parameters));
+		$res = $this->request($action, $parameters);
 		if ($res['error'] !== '' || $res['http_code'] != 200) {
 			$this->error('Server sent back an error: ' . $res['http_code']);
 			return '';
@@ -591,9 +593,7 @@ class Browshot
 
 	private function return_string($action, $parameters = array())
 	{
-		$url = $this->make_url($action, $parameters);
-
-		$res = $this->http_get($url);
+		$res = $this->request($action, $parameters);
 
 		if ($res['http_code'] != "200")
 		{
@@ -606,9 +606,7 @@ class Browshot
 
 	private function return_reply($action, $parameters = array())
 	{
-		$url = $this->make_url($action, $parameters);
-
-		$res = $this->http_get($url);
+		$res = $this->request($action, $parameters);
 		$this->info($res['body']);
 
 		if ($res['error'] == '' && $res['http_code'] == "200")
@@ -628,9 +626,7 @@ class Browshot
 		$file = $parameters['file'];
 		unset($parameters['file']);
 
-		$url = $this->make_url($action, $parameters);
-
-		$res = $this->http_post($url, $file);
+		$res = $this->request($action, $parameters, $file);
 		$this->info($res['body']);
 
 		if ($res['error'] == '' && $res['http_code'] == "200")
@@ -646,27 +642,154 @@ class Browshot
 		}
 	}
 
-	private function make_url($action, $parameters)
+	public function device_list($parameters = array())
 	{
-		$url = $this->_base . $action . "?key=" . urlencode($this->_key);
-		
-		foreach ($parameters as $key => $value) {
-			if ($key == 'urls') {
-			  foreach ((array)$value as $uri) {
-			    $url .= '&url=' . urlencode($uri);
-			  }
-			}
-			elseif($key == 'instances') {
-			  foreach ($value as $instance_id) {
-			    $url .= '&instance_id=' . urlencode($instance_id);
-			  }
-			}
-			else {
-			  $url .= '&' . urlencode($key) . '=' . urlencode($value);
+		return $this->return_reply('device/list', $parameters);
+	}
+
+	public function app_list($parameters = array())
+	{
+		return $this->return_reply('app/list', $parameters);
+	}
+
+	public function app_info($id, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->return_reply('app/info', $parameters);
+	}
+
+	public function app_create($parameters)
+	{
+		return $this->app_request('app/create', $parameters);
+	}
+
+	public function app_update($id, $parameters)
+	{
+		$parameters['id'] = $id;
+		return $this->app_request('app/update', $parameters);
+	}
+
+	public function app_delete($id, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->app_request('app/delete', $parameters);
+	}
+
+	public function app_test($id, $parameters = array())
+	{
+		$parameters['id'] = $id;
+		return $this->app_request('app/test', $parameters);
+	}
+
+	public function app_run($screenshot_id, $apps, $parameters = array())
+	{
+		$parameters['screenshot_id'] = $screenshot_id;
+		$parameters['apps'] = array_map('strval', $apps);
+		return $this->app_request('app/run', $parameters);
+	}
+
+	private function app_request($action, $body)
+	{
+		$query = array();
+		if (isset($body['api_version'])) {
+			$query['api_version'] = $body['api_version'];
+			unset($body['api_version']);
+		}
+		foreach (array('id', 'screenshot_id') as $field) {
+			if (isset($body[$field]) && preg_match('/^[0-9]+$/D', (string)$body[$field])) {
+				$body[$field] = (int)$body[$field];
 			}
 		}
+		if (isset($body['isActive']) && in_array($body['isActive'], array(0, 1, '0', '1'), true)) {
+			$body['isActive'] = (bool)$body['isActive'];
+		}
+		$res = $this->request($action, $query, null, $body);
+		$reply = json_decode($res['body']);
+		return $reply === null ? $this->generic_error($res['error']) : $reply;
+	}
 
-		$this->info($url);
+	private function version_for($action, $parameters)
+	{
+		if (isset($parameters['api_version']) && preg_match('/^[12]$/D', (string)$parameters['api_version'])) {
+			return (string)$parameters['api_version'];
+		}
+		if (!$this->auto_api) {
+			return null;
+		}
+		if (preg_match('~^(instance/|browser/create$|screenshot/host$)~', $action)) {
+			return '1';
+		}
+		if ($action === 'browser/info' && isset($parameters['id']) &&
+		    !in_array((string)$parameters['id'], array('40', '42'), true)) {
+			return '1';
+		}
+		$legacy = '/^(instance_id|instance_ids|instances|screen|details|ids|hook(_.+)?|hosting(_.+)?|device_name|device_touch|device_mobile|device_landscape|user_agent)$/D';
+		foreach ($parameters as $key => $value) {
+			if ($value !== null && $value !== array() && preg_match($legacy, $key)) {
+				return '1';
+			}
+		}
+		return '2';
+	}
+
+	private function request($action, $parameters, $file = null, $body = null)
+	{
+		$url = $this->make_url($action, $parameters);
+		$res = $file === null && $body === null ? $this->http_get($url) : $this->http_post($url, $file, $body);
+		if (!$this->auto_api || isset($parameters['api_version']) ||
+		    $this->version_for($action, $parameters) !== '2' ||
+		    preg_match('~^(app/|device/|wait$|batch/download$|ping$|simple/)~', $action) ||
+		    $res['http_code'] != 404 || parse_url($url, PHP_URL_PATH) !== parse_url($res['last_url'], PHP_URL_PATH) ||
+		    !preg_match('~^application/json(?:;|$)~i', (string)$res['content_type'])) {
+			return $res;
+		}
+		foreach ($parameters as $key => $value) {
+			if ($value !== null && preg_match('/^(browser|country|screen_width|screen_height|mobile|device|profiles|apps(\[.*\])?)$/D', $key)) {
+				return $res;
+			}
+		}
+		$error = json_decode($res['body'], true);
+		if (is_array($error) && isset($error['success'], $error['error'], $error['message']) &&
+		    $error['success'] === false && $error['error'] === 'NOT_FOUND' && $error['message'] === 'Page not found') {
+			$parameters['api_version'] = 1;
+			$url = $this->make_url($action, $parameters);
+			return $file === null ? $this->http_get($url) : $this->http_post($url, $file);
+		}
+		return $res;
+	}
+
+	private function make_url($action, $parameters)
+	{
+		$version = $this->version_for($action, $parameters);
+		$base = rtrim($this->_base, '/') . '/';
+		if ($version !== null) {
+			$base = preg_replace('~/api/v[12]/$~', '/api/v' . $version . '/', $base);
+		}
+		$url = $base . $action . '?key=' . urlencode($this->_key);
+		foreach ($parameters as $name => $value) {
+			if ($name === 'api_version' || $value === null) {
+				continue;
+			}
+			$key = $name === 'urls' ? 'url' : ($name === 'instances' ? 'instance_id' : $name);
+			if ($key === 'profiles' && is_array($value)) {
+				$value = json_encode($value);
+			}
+			if ($key === 'apps' && (is_object($value) || (is_array($value) && array_values($value) !== $value))) {
+				foreach ($value as $app => $template) {
+					if ($template !== null) {
+						$url .= '&' . urlencode('apps[' . $app . ']') . '=' . urlencode($template);
+					}
+				}
+				continue;
+			}
+			$values = is_array($value) && in_array($key, array('url', 'instance_id', 'apps'), true) ? $value : array($value);
+			foreach ($values as $item) {
+				if ($item !== null) {
+					$url .= '&' . urlencode($key) . '=' . urlencode(is_bool($item) ? (int)$item : $item);
+				}
+			}
+		}
+		$this->info($base . $action);
 		return $url;
 	}
 
@@ -736,12 +859,14 @@ class Browshot
 	    return $result;
 	}
 
-	private function http_post($url, $file = '')
+	private function http_post($url, $file = '', $body = null)
 	{
 		$data = array('file' => "@$file");
 			
 			
-		if (class_exists('CURLFile')) {
+		if ($body !== null) {
+			$data = json_encode((object)$body);
+		} elseif (class_exists('CURLFile')) {
 			$mime = mime_content_type($file);
 			$info = pathinfo($file);
 			$name = $info['basename'];
@@ -757,9 +882,13 @@ class Browshot
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $body !== null);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive")); 
+		$headers = array("User-Agent: 'PHP Browshot " . Browshot::version, "Connection: Keep-Alive");
+		if ($body !== null) {
+			$headers[] = 'Content-Type: application/json';
+		}
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
 		$response = curl_exec($ch);
@@ -769,7 +898,8 @@ class Browshot
 						'body' => '',
 						'error' => '',
 						'http_code' => '',
-						'last_url' => ''
+						'last_url' => '',
+						'content_type' => ''
 		);
 		
 		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -787,6 +917,7 @@ class Browshot
 		
 		$result['http_code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
 		$result['last_url'] = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL);
+		$result['content_type'] = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 		
 		if ($result['http_code'] != 200) {
 		try {

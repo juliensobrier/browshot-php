@@ -168,6 +168,94 @@ class ArtifactAPI extends TestCase
 		}
 	}
 
+	public function testAutomaticRoutingForCapturesAndInfo()
+	{
+		$client = $this->automaticClient();
+		$legacy = $client->screenshot_create(array('url' => 'https://example.com', 'instance_id' => 373));
+		$this->assertSame('/api/v1/screenshot/create', $legacy->path);
+		$shared = $client->screenshot_info(123);
+		$this->assertSame('/api/v2/screenshot/info', $shared->path);
+		$this->assertFalse(property_exists($shared->query, 'details'));
+		$this->assertSame('/api/v1/screenshot/info', $client->screenshot_info(123, array('details' => 0))->path);
+		$forced = $client->screenshot_info(123, array('api_version' => 1));
+		$this->assertSame('/api/v1/screenshot/info', $forced->path);
+		$this->assertFalse(property_exists($forced->query, 'api_version'));
+		$this->assertSame('/api/v1/screenshot/info', $client->screenshot_info(123, array('offline' => 1))->path);
+		$this->assertIsArray($client->screenshot_info(123, array('offline' => 1, 'api_version' => 2)));
+	}
+
+	public function testUsesV2ForBulkCapturesAndAppRequests()
+	{
+		$client = $this->automaticClient();
+		$urls = array('https://example.com', 'https://example.net/');
+		$profiles = array(array('browser' => 'firefox', 'country' => 'fr'), array('device' => 'iphone_15_pro'));
+		$result = $client->screenshot_multiple($urls, array(), array('profiles' => $profiles, 'apps' => array('uploads' => 'shot.png')));
+		$this->assertSame('/api/v2/screenshot/multiple', $result['path']);
+		$this->assertStringContainsString('url=' . urlencode($urls[0]) . '&url=' . urlencode($urls[1]), $result['rawQuery']);
+		$this->assertSame($profiles, json_decode($result['query']->profiles, true));
+		$this->assertSame('shot.png', $result['query']->apps->uploads);
+		$this->assertSame('/api/v2/crawl/create', $client->crawl_create(array('domain' => 'example.com', 'country' => 'fr'))->path);
+		$this->assertSame('/api/v2/device/list', $client->device_list()->path);
+		$this->assertSame('/api/v2/app/list', $client->app_list()->path);
+		$this->assertSame('37', $client->app_info(37)->query->id);
+
+		$create = $client->app_create(array('type' => 'webhook', 'app_id' => 'notify', 'name' => 'Notifications',
+			'config' => array('url' => 'https://example.com/capture-events')));
+		$this->assertSame('/api/v2/app/create', $create->path);
+		$this->assertSame('POST', $create->method);
+		$this->assertSame('https://example.com/capture-events', $create->json->config->url);
+		$update = $client->app_update('37', array('isActive' => 0));
+		$this->assertSame(37, $update->json->id);
+		$this->assertFalse($update->json->isActive);
+		$this->assertSame(37, $client->app_delete(37)->json->id);
+		$this->assertSame('/api/v2/app/test', $client->app_test(37)->path);
+		$run = $client->app_run('123', array('uploads'));
+		$this->assertSame(123, $run->json->screenshot_id);
+		$this->assertSame(array('uploads'), $run->json->apps);
+	}
+
+	public function testV2BatchUploadsWithoutInstanceId()
+	{
+		$client = $this->automaticClient();
+		$file = tempnam(sys_get_temp_dir(), 'browshot-');
+		try {
+			file_put_contents($file, 'https://example.com/');
+			$result = $client->batch_create($file, array('country' => 'fr'));
+			$this->assertSame('/api/v2/batch/create', $result->path);
+			$this->assertSame('POST', $result->method);
+			$this->assertSame('fr', $result->query->country);
+			$this->assertFalse(property_exists($result->query, 'instance_id'));
+			$this->assertSame('https://example.com/', $result->file);
+		} finally {
+			unlink($file);
+		}
+	}
+
+	public function testV2SimpleFollowsWaitAndResultRedirects()
+	{
+		$client = $this->automaticClient();
+		$options = array('url' => 'https://example.com/', 'country' => 'fr');
+		$png = "\x89PNG\r\n\x1a\n\xff";
+		$screenshot = $client->simple($options);
+		$this->assertSame(200, $screenshot['code']);
+		$this->assertSame($png, $screenshot['image']);
+		$file = tempnam(sys_get_temp_dir(), 'browshot-');
+		try {
+			$result = $client->simple_file($file, $options);
+			$this->assertSame($file, $result['file']);
+			$this->assertSame($png, file_get_contents($file));
+		} finally {
+			unlink($file);
+		}
+	}
+
+	private function automaticClient()
+	{
+		$client = new Browshot('test key&value');
+		$client->_base = str_replace('/v1/', '/v2/', self::$base);
+		return $client;
+	}
+
 	private function assertCaptureOptions($request, $path, $options)
 	{
 		$this->assertSame($path, $request->path);
